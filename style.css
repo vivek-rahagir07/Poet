@@ -1033,6 +1033,82 @@ nav {
     color: #aeaeae;
 }
 
+/* Subscription Section */
+.subscription-container {
+    margin-bottom: 3rem;
+    max-width: 500px;
+    width: 100%;
+}
+
+.subscription-container h3 {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.subscription-container p {
+    font-size: 0.95rem;
+    color: #888;
+    margin-bottom: 1.5rem;
+}
+
+.sub-input-group {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    padding-bottom: 5px;
+    transition: border-color 0.3s;
+}
+
+.sub-input-group:focus-within {
+    border-color: var(--accent-color);
+}
+
+#sub-email {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    font-family: var(--font-sans);
+    padding: 0.8rem 0;
+    outline: none;
+    font-size: 1rem;
+}
+
+#sub-btn {
+    background: transparent;
+    border: none;
+    color: var(--accent-color);
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    padding: 0 1rem;
+}
+
+#sub-btn:hover {
+    color: white;
+    transform: translateX(5px);
+}
+
+.sub-feedback {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--accent-color);
+    height: 1.2rem;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.sub-feedback.visible {
+    opacity: 1;
+}
+
+/* Footer Adjustments */
 footer {
     padding: 3rem 2rem;
     text-align: center;
