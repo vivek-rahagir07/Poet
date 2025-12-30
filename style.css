@@ -45,6 +45,46 @@ body {
     /* Custom cursor */
 }
 
+/* Global Likes Stats in Nav */
+.global-likes-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    color: var(--accent-color);
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.global-likes-container .heart-icon {
+    font-size: 1rem;
+    animation: pulseSmall 2s infinite;
+}
+
+@keyframes pulseSmall {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+        text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
 /* Preloader */
 .preloader {
     position: fixed;
@@ -514,9 +554,12 @@ nav {
     /* Slight softening */
     opacity: 0;
     /* JS fade in */
-    transform: translateY(40px);
-    /* Increased for reveal effect */
-    transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transform: translateY(40px) scale(0.95);
+    /* Increased for reveal effect with scale */
+    transition:
+        opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1),
+        transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1),
+        filter 0.5s ease;
 
     /* 3D Context */
     perspective: 1000px;
@@ -525,7 +568,16 @@ nav {
 
 .gallery-item.visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+}
+
+.gallery-item.hidden-filtered {
+    opacity: 0 !important;
+    transform: scale(0.8) translateY(20px) !important;
+    pointer-events: none;
+    position: absolute;
+    /* Take out of flow but stay in container for smooth exit */
+    visibility: hidden;
 }
 
 .gallery-item img {

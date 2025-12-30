@@ -26,14 +26,17 @@ let galleryLikes = {};
 // --- Data Management (Firestore) ---
 function initLikeSystem() {
     db.collection("gallery_likes").onSnapshot((snapshot) => {
+        let total = 0;
         snapshot.docs.forEach(doc => {
-            galleryLikes[doc.id] = doc.data().count || 0;
+            const count = doc.data().count || 0;
+            galleryLikes[doc.id] = count;
+            total += count;
         });
-        updateLikeUI();
+        updateLikeUI(total);
     });
 }
 
-function updateLikeUI() {
+function updateLikeUI(totalLikes = null) {
     document.querySelectorAll('.like-interaction').forEach(el => {
         const id = el.dataset.id;
         const countEl = el.querySelector('.like-count');
@@ -48,6 +51,25 @@ function updateLikeUI() {
             }
         }
     });
+
+    // Update Global Counter
+    const globalCountEl = document.querySelector('.total-likes-count');
+    if (globalCountEl && totalLikes !== null) {
+        animateValue(globalCountEl, parseInt(globalCountEl.textContent) || 0, totalLikes, 1000);
+    }
+}
+
+function animateValue(obj, start, end, duration) {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        obj.innerHTML = Math.floor(progress * (end - start) + start);
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        }
+    };
+    window.requestAnimationFrame(step);
 }
 
 async function toggleLike(id) {
@@ -812,13 +834,22 @@ filterBtns.forEach(btn => {
         btn.classList.add('active');
         const filter = btn.dataset.filter;
         const items = document.querySelectorAll('.gallery-item');
+
         items.forEach(item => {
             if (filter === 'all' || item.dataset.category === filter) {
                 item.style.display = 'block';
-                setTimeout(() => item.classList.add('visible'), 50);
+                // Remove hidden class first for transition
+                item.classList.remove('hidden-filtered');
+                setTimeout(() => item.classList.add('visible'), 10);
             } else {
-                item.style.display = 'none';
+                item.classList.add('hidden-filtered');
                 item.classList.remove('visible');
+                // Wait for transition before hiding
+                setTimeout(() => {
+                    if (item.classList.contains('hidden-filtered')) {
+                        item.style.display = 'none';
+                    }
+                }, 500);
             }
         });
     });
