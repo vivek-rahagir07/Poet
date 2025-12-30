@@ -167,8 +167,10 @@ function initGlobalWhispers() {
                 const card = document.createElement('div');
                 card.classList.add('whisper-card');
                 card.innerHTML = `
-                    <div class="whisper-meta">A Wayfarer whispered...</div>
-                    <div class="whisper-content">"${data.text}"</div>
+                    <div class="whisper-info">
+                        <div class="whisper-meta">A Wayfarer whispered...</div>
+                        <div class="whisper-content">"${data.text}"</div>
+                    </div>
                     <div class="whisper-date">${data.date || ''}</div>
                 `;
                 return card;

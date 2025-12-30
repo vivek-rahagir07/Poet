@@ -1747,85 +1747,125 @@ footer {
     background: var(--accent-color);
 }
 
-/* Global Whispers Section */
+/* Global Whispers Section (Horizontal Marquee) */
 .global-whispers-section {
-    padding: 6rem 4rem;
+    padding: 6rem 0;
     background-color: var(--bg-color);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     text-align: center;
+    overflow: hidden;
 }
 
-.whispers-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    max-width: 1400px;
-    /* Wider for more columns */
-    margin: 3rem auto 0;
-    padding-bottom: 4rem;
+.whisper-marquee-container {
+    width: 100%;
+    overflow: hidden;
+    padding: 3rem 0;
+    position: relative;
+    cursor: default;
+    /* Subtle fade at edges */
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.whisper-marquee-track {
+    display: flex;
+    gap: 2rem;
+    width: max-content;
+    animation: scrollMarquee 40s linear infinite;
+    padding-left: 2rem;
+}
+
+.whisper-marquee-container:hover .whisper-marquee-track {
+    animation-play-state: paused;
+}
+
+@keyframes scrollMarquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(calc(-50% - 1rem));
+        /* Seamless loop point */
+    }
 }
 
 .whisper-card {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.05);
     padding: 1.5rem;
-    border-radius: 4px;
+    border-radius: 6px;
     text-align: left;
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    border-left: 2px solid var(--accent-color);
+    border-left: 3px solid var(--accent-color);
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 120px;
-    opacity: 0;
-    /* JS Animation */
-    animation: fadeInWhisper 0.6s forwards;
-}
-
-@keyframes fadeInWhisper {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    flex-direction: row;
+    /* Horizontal layout */
+    align-items: center;
+    gap: 1.5rem;
+    width: 450px;
+    /* Wide card */
+    height: 100px;
+    /* Short card */
+    flex-shrink: 0;
+    position: relative;
 }
 
 .whisper-card:hover {
     background: rgba(255, 255, 255, 0.06);
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transform: translateY(-5px);
+    border-left-width: 6px;
+}
+
+.whisper-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
 }
 
 .whisper-meta {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.1em;
     color: var(--accent-color);
-    margin-bottom: 0.8rem;
-    opacity: 0.8;
+    margin-bottom: 0.3rem;
+    opacity: 0.7;
 }
 
 .whisper-content {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #e0e0e0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: #ddd;
     font-style: italic;
     font-family: var(--font-serif);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    /* Limit to 2 lines for horizontal look */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .whisper-date {
-    font-size: 0.65rem;
-    color: #555;
-    margin-top: 1rem;
-    align-self: flex-end;
+    font-size: 0.6rem;
+    color: #444;
+    position: absolute;
+    bottom: 0.8rem;
+    right: 1rem;
 }
 
 @media (max-width: 768px) {
     .global-whispers-section {
-        padding: 4rem 1.5rem;
+        padding: 4rem 0;
+    }
+
+    .whisper-card {
+        width: 300px;
+        height: 90px;
+        padding: 1rem;
+    }
+
+    .whisper-content {
+        font-size: 0.85rem;
     }
 }
