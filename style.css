@@ -1055,7 +1055,8 @@ footer {
     background: var(--accent-color);
     color: var(--bg-color);
     border-radius: 50%;
-    display: flex;
+    display: none;
+    /* Hidden by default - use shortcut to show */
     /* Restored visibility */
     align-items: center;
     justify-content: center;

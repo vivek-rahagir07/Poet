@@ -749,6 +749,20 @@ if (writerTrigger) {
             if (articleBtn) articleBtn.click();
         }
     });
+
+    // Secret shortcut to show/hide the writer button: Cmd + Shift + W
+    window.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.code === 'KeyW') {
+            e.preventDefault();
+            const isHidden = window.getComputedStyle(writerTrigger).display === 'none';
+            writerTrigger.style.display = isHidden ? 'flex' : 'none';
+
+            if (isHidden) {
+                console.log("Writer access granted. ✨");
+
+            }
+        }
+    });
 }
 
 // --- Custom Interaction ---
