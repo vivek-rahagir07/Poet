@@ -675,17 +675,24 @@ if (audio && soundToggle) {
             audio.play().then(() => {
                 isPlaying = true;
                 soundToggle.classList.add('playing');
-                soundToggle.innerHTML = '<span>IlI</span>';
-                document.removeEventListener('click', startAudio);
-                document.removeEventListener('scroll', startAudio);
-            }).catch(e => console.log("Audio autoplay waiting for interaction"));
+                soundToggle.innerHTML = '<span>IlI</span>'; // Visual equalizer
+                
+                // Remove all listeners once playing
+                ['click', 'scroll', 'mousemove', 'keydown', 'touchstart'].forEach(event => {
+                    document.removeEventListener(event, startAudio);
+                });
+            }).catch(e => {
+                console.log("Audio autoplay waiting for interaction");
+            });
         }
     };
 
-    document.addEventListener('click', startAudio);
-    document.addEventListener('scroll', startAudio);
+    // Add listeners for various user interactions
+    ['click', 'scroll', 'mousemove', 'keydown', 'touchstart'].forEach(event => {
+        document.addEventListener(event, startAudio, { once: true });
+    });
 
-    // Try autoplay immediately
+    // Try autoplay immediately (will likely fail but worth a shot)
     startAudio();
 }
 
