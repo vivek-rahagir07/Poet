@@ -1407,6 +1407,11 @@ footer {
         /* darker bg for readabilty */
     }
 
+    .sound-toggle {
+        top: 1.5rem;
+        right: 1.5rem;
+    }
+
     .links {
         gap: 1.5rem;
         font-size: 0.9rem;
@@ -1539,8 +1544,9 @@ footer {
 /* Sound Toggle */
 .sound-toggle {
     position: fixed;
-    bottom: 2rem;
-    left: 2rem;
+    top: 2rem;
+    right: 3rem;
+    /* Slightly inward to avoid scrollbar */
     width: 3.5rem;
     height: 3.5rem;
     background: rgba(255, 255, 255, 0.05);
@@ -1581,4 +1587,115 @@ footer {
     100% {
         transform: scale(1);
     }
+}
+
+/* Comment Section Styles */
+.comment-section {
+    width: 100%;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: left;
+    position: relative;
+    z-index: 10;
+}
+
+.comment-section h3 {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+}
+
+.comment-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 1.5rem;
+    padding-right: 10px;
+}
+
+.comment-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 2px solid var(--accent-color);
+    animation: fadeInComment 0.5s ease-out;
+}
+
+.comment-text {
+    font-size: 0.95rem;
+    color: #ddd;
+    line-height: 1.4;
+}
+
+.comment-date {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+.comment-input-container {
+    display: flex;
+    gap: 1rem;
+}
+
+.comment-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 0.8rem 1.2rem;
+    color: white;
+    font-family: var(--font-sans);
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.comment-input:focus {
+    border-color: var(--accent-color);
+}
+
+.send-comment-btn {
+    background: var(--accent-color);
+    color: #000;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.send-comment-btn:hover {
+    transform: scale(1.1);
+}
+
+@keyframes fadeInComment {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scrollbar for comment list */
+.comment-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.comment-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.comment-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
 }

@@ -107,6 +107,45 @@ async function saveArticleToFirebase(title, body) {
     }
 }
 
+// --- Comment System Logic ---
+async function saveComment(pieceId, text) {
+    if (!text.trim()) return;
+    try {
+        await db.collection("comments").add({
+            pieceId,
+            text: text.trim(),
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            date: new Date().toLocaleString()
+        });
+    } catch (e) {
+        console.error("Error saving comment:", e);
+    }
+}
+
+function loadComments(pieceId, container) {
+    return db.collection("comments")
+        .where("pieceId", "==", pieceId)
+        .orderBy("timestamp", "asc")
+        .onSnapshot((snapshot) => {
+            container.innerHTML = '';
+            if (snapshot.empty) {
+                container.innerHTML = '<div class="comment-item" style="border:none; background:none; color:#666;">No whispers yet... be the first.</div>';
+                return;
+            }
+            snapshot.docs.forEach(doc => {
+                const data = doc.data();
+                const div = document.createElement('div');
+                div.classList.add('comment-item');
+                div.innerHTML = `
+                    <div class="comment-text">${data.text}</div>
+                    <span class="comment-date">${data.date || 'Somewhere in time'}</span>
+                `;
+                container.appendChild(div);
+                container.scrollTop = container.scrollHeight;
+            });
+        });
+}
+
 // --- Preloader ---
 window.addEventListener('load', () => {
     const preloader = document.querySelector('.preloader');
@@ -501,6 +540,45 @@ function openLightbox(src, id) {
 
     lightbox.appendChild(actionsContainer);
 
+    // Add Comment Section
+    const commentSection = document.createElement('div');
+    commentSection.classList.add('comment-section');
+    commentSection.innerHTML = `
+        <h3>Whispers</h3>
+        <div class="comment-list" id="gallery-comments"></div>
+        <div class="comment-input-container">
+            <input type="text" class="comment-input" placeholder="Leave a whisper..." id="gal-comment-input">
+            <button class="send-comment-btn" id="gal-send-comment">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+            </button>
+        </div>
+    `;
+
+    const commentList = commentSection.querySelector('#gallery-comments');
+    const unsubscribe = loadComments(id, commentList);
+
+    // Store unsubscribe to call on close
+    lightbox.dataset.commentUnsubscribe = 'active';
+    window._currentUnsubscribe = unsubscribe;
+
+    commentSection.querySelector('#gal-send-comment').addEventListener('click', async () => {
+        const input = commentSection.querySelector('#gal-comment-input');
+        await saveComment(id, input.value);
+        input.value = '';
+    });
+
+    commentSection.querySelector('#gal-comment-input').addEventListener('keypress', async (e) => {
+        if (e.key === 'Enter') {
+            const input = commentSection.querySelector('#gal-comment-input');
+            await saveComment(id, input.value);
+            input.value = '';
+        }
+    });
+
+    lightbox.appendChild(commentSection);
+
     lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
 }
@@ -528,9 +606,39 @@ function openTextModal(article) {
                 <span>Go Back</span>
             </button>
         </div>
+        <div class="comment-section">
+            <h3>Whispers</h3>
+            <div class="comment-list" id="modal-comments"></div>
+            <div class="comment-input-container">
+                <input type="text" class="comment-input" placeholder="Leave a whisper..." id="mod-comment-input">
+                <button class="send-comment-btn" id="mod-send-comment">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
     `;
     content.querySelector('.like-interaction').addEventListener('click', () => toggleLike(article.id));
     content.querySelector('#modal-go-back').addEventListener('click', closeLightbox);
+
+    const commentList = content.querySelector('#modal-comments');
+    const unsubscribe = loadComments(article.id, commentList);
+    window._currentUnsubscribe = unsubscribe;
+
+    content.querySelector('#mod-send-comment').addEventListener('click', async () => {
+        const input = content.querySelector('#mod-comment-input');
+        await saveComment(article.id, input.value);
+        input.value = '';
+    });
+
+    content.querySelector('#mod-comment-input').addEventListener('keypress', async (e) => {
+        if (e.key === 'Enter') {
+            const input = content.querySelector('#mod-comment-input');
+            await saveComment(article.id, input.value);
+            input.value = '';
+        }
+    });
 
     lightbox.appendChild(content);
     lightbox.classList.add('open');
@@ -540,12 +648,20 @@ function openTextModal(article) {
 function closeLightbox() {
     lightbox.classList.remove('open');
     document.body.style.overflow = 'auto';
+
+    if (window._currentUnsubscribe) {
+        window._currentUnsubscribe();
+        window._currentUnsubscribe = null;
+    }
+
     setTimeout(() => {
         lightboxImg.src = '';
         const existingText = lightbox.querySelector('.article-read-content');
         if (existingText) existingText.remove();
         const existingActions = lightbox.querySelector('.modal-actions-container');
         if (existingActions) existingActions.remove();
+        const existingComments = lightbox.querySelector('.comment-section');
+        if (existingComments) existingComments.remove();
     }, 300);
 }
 
