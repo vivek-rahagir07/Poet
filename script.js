@@ -146,6 +146,34 @@ function loadComments(pieceId, container) {
         });
 }
 
+function initGlobalWhispers() {
+    const feed = document.getElementById('global-whispers-feed');
+    if (!feed) return;
+
+    db.collection("comments")
+        .orderBy("timestamp", "desc")
+        .limit(50) // Increased limit for a more robust feed
+        .onSnapshot((snapshot) => {
+            feed.innerHTML = '';
+            if (snapshot.empty) {
+                feed.innerHTML = '<p style="grid-column: 1/-1; opacity:0.5; font-style: italic;">The void is silent... waiting for your echoes.</p>';
+                return;
+            }
+            snapshot.docs.forEach((doc, index) => {
+                const data = doc.data();
+                const card = document.createElement('div');
+                card.classList.add('whisper-card');
+                card.style.animationDelay = `${index * 0.05}s`; // Staggered entry
+                card.innerHTML = `
+                    <div class="whisper-meta">A Wayfarer whispered...</div>
+                    <div class="whisper-content">"${data.text}"</div>
+                    <div class="whisper-date">${data.date || ''}</div>
+                `;
+                feed.appendChild(card);
+            });
+        });
+}
+
 // --- Preloader ---
 window.addEventListener('load', () => {
     const preloader = document.querySelector('.preloader');
@@ -830,4 +858,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initRealtimeUpdates(); // Start listening for cloud articles
     initLikeSystem(); // Start infinite love sync
     initHeroCollage();
+    initGlobalWhispers();
 });

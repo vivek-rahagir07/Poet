@@ -665,11 +665,14 @@ nav {
     flex-direction: column;
     /* Changed to column for vertical stacking */
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    /* Ensure items start from top for scrolling */
     opacity: 0;
     transition: opacity 0.3s;
-    padding: 2rem;
-    /* Add padding to prevent edge touching */
+    padding: 4rem 2rem;
+    /* More top padding */
+    overflow-y: auto;
+    /* Enable scrolling */
 }
 
 .lightbox.open {
@@ -1438,7 +1441,7 @@ footer {
 
     /* Help images in lightbox fit better on mobile with buttons */
     .lightbox.open .lightbox-img {
-        max-height: 65vh;
+        max-height: 50vh;
         margin-bottom: 1rem;
     }
 
@@ -1589,26 +1592,67 @@ footer {
     }
 }
 
+/* Lightbox */
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    /* Changed to column for vertical stacking */
+    align-items: center;
+    justify-content: flex-start;
+    /* Start from top for scrolling */
+    opacity: 0;
+    transition: opacity 0.3s;
+    padding: 2rem;
+    overflow-y: auto;
+    /* Enable scrolling */
+}
+
+/* ... existing styles ... */
+
+.lightbox-img {
+    max-height: 70vh;
+    /* Reduced for better visibility of controls */
+    max-width: 90vw;
+    object-fit: contain;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    margin-bottom: 1.5rem;
+    flex-shrink: 0;
+    /* Don't shrink the image too much */
+}
+
 /* Comment Section Styles */
+/* Reorder Comment System: Input on top */
 .comment-section {
     width: 100%;
-    margin-top: 2rem;
-    padding-top: 2rem;
+    max-width: 600px;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     text-align: left;
     position: relative;
     z-index: 10;
+    display: flex;
+    flex-direction: column;
 }
 
 .comment-section h3 {
+    order: 1;
     font-family: var(--font-serif);
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     color: var(--accent-color);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .comment-list {
-    max-height: 300px;
+    order: 3;
+    max-height: 250px;
     overflow-y: auto;
     margin-bottom: 1.5rem;
     padding-right: 10px;
@@ -1637,8 +1681,11 @@ footer {
 }
 
 .comment-input-container {
+    order: 2;
+    /* Move to top of section */
     display: flex;
     gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .comment-input {
@@ -1698,4 +1745,87 @@ footer {
 
 .comment-list::-webkit-scrollbar-thumb:hover {
     background: var(--accent-color);
+}
+
+/* Global Whispers Section */
+.global-whispers-section {
+    padding: 6rem 4rem;
+    background-color: var(--bg-color);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+}
+
+.whispers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1400px;
+    /* Wider for more columns */
+    margin: 3rem auto 0;
+    padding-bottom: 4rem;
+}
+
+.whisper-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 4px;
+    text-align: left;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border-left: 2px solid var(--accent-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120px;
+    opacity: 0;
+    /* JS Animation */
+    animation: fadeInWhisper 0.6s forwards;
+}
+
+@keyframes fadeInWhisper {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.whisper-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.whisper-meta {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent-color);
+    margin-bottom: 0.8rem;
+    opacity: 0.8;
+}
+
+.whisper-content {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #e0e0e0;
+    font-style: italic;
+    font-family: var(--font-serif);
+}
+
+.whisper-date {
+    font-size: 0.65rem;
+    color: #555;
+    margin-top: 1rem;
+    align-self: flex-end;
+}
+
+@media (max-width: 768px) {
+    .global-whispers-section {
+        padding: 4rem 1.5rem;
+    }
 }
