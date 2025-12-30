@@ -487,10 +487,21 @@ function renderGallery() {
     }
 
     // Add text articles
-    articles.forEach(art => {
+    // Sort dynamic articles by timestamp (descending) before processing
+    const sortedArticles = [...articles].sort((a, b) => {
+        const timeA = a.timestamp ? a.timestamp.toDate().getTime() : 0;
+        const timeB = b.timestamp ? b.timestamp.toDate().getTime() : 0;
+        return timeB - timeA;
+    });
+
+    sortedArticles.forEach((art, index) => {
         const timestamp = art.timestamp ? art.timestamp.toDate().getTime() : now;
-        const isRecent = (now - timestamp) < FOUR_DAYS_MS;
-        const isExpired = (now - timestamp) >= FOUR_DAYS_MS;
+        const isWithinTime = (now - timestamp) < FOUR_DAYS_MS;
+
+        // REFINED RULE: Only the TOP 4 latest pieces are "Recent"
+        // Everything else (or older than 4 days) is "Expired" (faded)
+        const isRecent = index < 4 && isWithinTime;
+        const isExpired = !isRecent; // Force fading for anything not in the top 4 recent
 
         items.push({
             type: 'text',
