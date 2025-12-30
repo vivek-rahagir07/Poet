@@ -49,6 +49,7 @@ body {
 .global-likes-container {
     position: absolute;
     left: 50%;
+    top: 2rem;
     transform: translateX(-50%);
     display: flex;
     align-items: center;
@@ -1935,5 +1936,29 @@ footer {
         transform: none;
         padding: 4px 10px;
         font-size: 0.75rem;
+        z-index: 1001;
+    }
+}
+
+/* Floating Heart Animation */
+.floating-heart {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    font-size: 1.5rem;
+    color: #ff4d4d;
+    animation: heartFlyUp 1.5s ease-out forwards;
+    text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+}
+
+@keyframes heartFlyUp {
+    0% {
+        transform: translateY(0) scale(1) rotate(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-150px) scale(2) rotate(20deg);
+        opacity: 0;
     }
 }

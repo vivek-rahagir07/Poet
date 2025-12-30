@@ -22,6 +22,7 @@ let localArticles = [];
 // --- Like System Data ---
 let likedItems = JSON.parse(localStorage.getItem('poet_liked_items')) || {};
 let galleryLikes = {};
+let lastTotalLikes = 0;
 
 // --- Data Management (Firestore) ---
 function initLikeSystem() {
@@ -32,6 +33,13 @@ function initLikeSystem() {
             galleryLikes[doc.id] = count;
             total += count;
         });
+
+        // Trigger heart popup if someone else likes something
+        if (total > lastTotalLikes && lastTotalLikes !== 0) {
+            triggerHeartPopup();
+        }
+        lastTotalLikes = total;
+
         updateLikeUI(total);
     });
 }
@@ -82,6 +90,7 @@ async function toggleLike(id) {
     } else {
         likedItems[id] = true;
         galleryLikes[id] = (galleryLikes[id] || 0) + 1;
+        triggerHeartPopup(); // Trigger cinematic popup
     }
 
     localStorage.setItem('poet_liked_items', JSON.stringify(likedItems));
@@ -101,6 +110,35 @@ async function toggleLike(id) {
         });
     } catch (e) {
         console.error("Like transaction failed: ", e);
+    }
+}
+
+function triggerHeartPopup() {
+    // Heart Fountain: Spawn 5 hearts
+    for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            heart.innerHTML = '❤';
+
+            // Randomize position and scale for a natural fountain look
+            const startX = (window.innerWidth / 2) + (Math.random() * 200 - 100);
+            const startY = window.innerHeight * 0.8;
+
+            const randomSize = 0.5 + Math.random() * 1.5;
+            const randomRotation = Math.random() * 40 - 20;
+
+            heart.style.left = `${startX}px`;
+            heart.style.top = `${startY}px`;
+            heart.style.transform = `scale(${randomSize}) rotate(${randomRotation}deg)`;
+
+            document.body.appendChild(heart);
+
+            // Cleanup
+            setTimeout(() => {
+                heart.remove();
+            }, 1500);
+        }, i * 100); // Slight stagger for cinematic feel
     }
 }
 function initRealtimeUpdates() {
