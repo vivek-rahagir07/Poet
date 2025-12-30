@@ -476,23 +476,30 @@ function openLightbox(src, id) {
     lightboxImg.style.display = 'block';
     const existingText = lightbox.querySelector('.article-read-content');
     if (existingText) existingText.remove();
-    const existingLike = lightbox.querySelector('.modal-like-container');
-    if (existingLike) existingLike.remove();
+    const existingActions = lightbox.querySelector('.modal-actions-container');
+    if (existingActions) existingActions.remove();
 
     lightboxImg.src = src;
 
-    // Add like button to lightbox
-    const likeContainer = document.createElement('div');
-    likeContainer.classList.add('modal-like-container');
-    likeContainer.innerHTML = `
+    // Add modal actions container (Like + Go Back)
+    const actionsContainer = document.createElement('div');
+    actionsContainer.classList.add('modal-actions-container');
+
+    actionsContainer.innerHTML = `
         <button class="modal-like-btn like-interaction" data-id="${id}">
             <span class="like-heart ${likedItems[id] ? 'liked' : ''}">❤</span>
             <span>Like Piece</span>
             <span class="like-count">(${galleryLikes[id] || 0})</span>
         </button>
+        <button class="modal-like-btn go-back-btn" id="lightbox-go-back">
+            <span>Go Back</span>
+        </button>
     `;
-    likeContainer.querySelector('.like-interaction').addEventListener('click', () => toggleLike(id));
-    lightbox.appendChild(likeContainer);
+
+    actionsContainer.querySelector('.like-interaction').addEventListener('click', () => toggleLike(id));
+    actionsContainer.querySelector('#lightbox-go-back').addEventListener('click', closeLightbox);
+
+    lightbox.appendChild(actionsContainer);
 
     lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -502,8 +509,8 @@ function openTextModal(article) {
     lightboxImg.style.display = 'none';
     const existingText = lightbox.querySelector('.article-read-content');
     if (existingText) existingText.remove();
-    const existingLike = lightbox.querySelector('.modal-like-container');
-    if (existingLike) existingLike.remove();
+    const existingActions = lightbox.querySelector('.modal-actions-container');
+    if (existingActions) existingActions.remove();
 
     const content = document.createElement('div');
     content.classList.add('article-read-content');
@@ -511,15 +518,19 @@ function openTextModal(article) {
     content.innerHTML = `
         <h2>${article.title}</h2>
         <p>${article.body}</p>
-        <div class="modal-like-container">
+        <div class="modal-actions-container">
             <button class="modal-like-btn like-interaction" data-id="${article.id}">
                 <span class="like-heart ${likedItems[article.id] ? 'liked' : ''}">❤</span>
                 <span>Like Piece</span>
                 <span class="like-count">(${galleryLikes[article.id] || 0})</span>
             </button>
+             <button class="modal-like-btn go-back-btn" id="modal-go-back">
+                <span>Go Back</span>
+            </button>
         </div>
     `;
     content.querySelector('.like-interaction').addEventListener('click', () => toggleLike(article.id));
+    content.querySelector('#modal-go-back').addEventListener('click', closeLightbox);
 
     lightbox.appendChild(content);
     lightbox.classList.add('open');
@@ -533,6 +544,8 @@ function closeLightbox() {
         lightboxImg.src = '';
         const existingText = lightbox.querySelector('.article-read-content');
         if (existingText) existingText.remove();
+        const existingActions = lightbox.querySelector('.modal-actions-container');
+        if (existingActions) existingActions.remove();
     }, 300);
 }
 
@@ -676,7 +689,7 @@ if (audio && soundToggle) {
                 isPlaying = true;
                 soundToggle.classList.add('playing');
                 soundToggle.innerHTML = '<span>IlI</span>'; // Visual equalizer
-                
+
                 // Remove all listeners once playing
                 ['click', 'scroll', 'mousemove', 'keydown', 'touchstart'].forEach(event => {
                     document.removeEventListener(event, startAudio);
