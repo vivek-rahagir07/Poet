@@ -753,13 +753,15 @@ if (writerTrigger) {
     // Secret shortcut to show/hide the writer button: Cmd + Shift + W
     window.addEventListener('keydown', (e) => {
         if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.code === 'KeyW') {
+            // Disable for mobile/small screens
+            if (window.innerWidth <= 768) return;
+
             e.preventDefault();
             const isHidden = window.getComputedStyle(writerTrigger).display === 'none';
             writerTrigger.style.display = isHidden ? 'flex' : 'none';
 
             if (isHidden) {
                 console.log("Writer access granted. ✨");
-
             }
         }
     });

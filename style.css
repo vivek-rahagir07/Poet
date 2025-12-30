@@ -1869,4 +1869,9 @@ footer {
     .whisper-content {
         font-size: 0.85rem;
     }
+
+    .writer-trigger {
+        display: none !important;
+        /* Strictly forbidden on mobile */
+    }
 }
