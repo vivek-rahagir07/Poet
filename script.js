@@ -974,10 +974,66 @@ if (audio && soundToggle) {
     startAudio();
 }
 
+// --- Subscription System ---
+function initSubscription() {
+    const subBtn = document.getElementById('sub-btn');
+    const subEmail = document.getElementById('sub-email');
+    const feedback = document.getElementById('sub-feedback');
+
+    if (!subBtn || !subEmail) return;
+
+    subBtn.addEventListener('click', async () => {
+        const email = subEmail.value.trim();
+
+        // Basic Validation
+        if (!email || !email.includes('@')) {
+            showFeedback("The shadows require a valid email...");
+            return;
+        }
+
+        subBtn.disabled = true;
+        subBtn.innerText = "...";
+
+        try {
+            await db.collection("subscribers").add({
+                email: email,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // Cinematic Success
+            subEmail.value = "";
+            showFeedback("You are now part of the silence. ✨");
+            triggerHeartPopup(); // Little celebration
+
+            setTimeout(() => {
+                subBtn.disabled = false;
+                subBtn.innerText = "Subscribe";
+            }, 3000);
+
+        } catch (e) {
+            console.error("Subscription error:", e);
+            showFeedback("The shadows are busy. Try again later.");
+            subBtn.disabled = false;
+            subBtn.innerText = "Subscribe";
+        }
+    });
+
+    function showFeedback(msg) {
+        feedback.innerText = msg;
+        feedback.classList.add('visible');
+        setTimeout(() => {
+            feedback.classList.remove('visible');
+        }, 4000);
+    }
+}
+
+// Global Initialization
 document.addEventListener('DOMContentLoaded', () => {
     renderGallery(); // Render static images immediately
     initRealtimeUpdates(); // Start listening for cloud articles
     initLikeSystem(); // Start infinite love sync
     initHeroCollage();
     initGlobalWhispers();
+    initWriterUI();
+    initSubscription(); // New subscription system
 });
