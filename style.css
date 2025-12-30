@@ -1725,7 +1725,7 @@ footer {
     border-radius: 8px;
     margin-bottom: 1rem;
     border-left: 2px solid var(--accent-color);
-    animation: fadeInComment 0.5s ease-out;
+    animation: fadeInComment 1.2s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 .comment-text {
