@@ -1408,8 +1408,9 @@ footer {
     }
 
     .sound-toggle {
-        top: 1.5rem;
-        right: 1.5rem;
+        top: 1rem;
+        left: 1rem;
+        right: auto;
     }
 
     .links {
@@ -1544,11 +1545,10 @@ footer {
 /* Sound Toggle */
 .sound-toggle {
     position: fixed;
-    top: 2rem;
-    right: 3rem;
-    /* Slightly inward to avoid scrollbar */
-    width: 3.5rem;
-    height: 3.5rem;
+    top: 1.5rem;
+    left: 1.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1559,7 +1559,7 @@ footer {
     color: var(--accent-color);
     cursor: pointer;
     z-index: 1000;
-    font-size: 1.2rem;
+    font-size: 1rem;
     transition: all 0.3s;
 }
 
