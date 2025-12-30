@@ -662,12 +662,14 @@ nav {
     background: rgba(0, 0, 0, 0.95);
     z-index: 1000;
     display: none;
-    flex-direction: column; /* Changed to column for vertical stacking */
+    flex-direction: column;
+    /* Changed to column for vertical stacking */
     align-items: center;
     justify-content: center;
     opacity: 0;
     transition: opacity 0.3s;
-    padding: 2rem; /* Add padding to prevent edge touching */
+    padding: 2rem;
+    /* Add padding to prevent edge touching */
 }
 
 .lightbox.open {
@@ -676,11 +678,14 @@ nav {
 }
 
 .lightbox-img {
-    max-height: 80vh; /* Reduced to make room for buttons */
+    max-height: 80vh;
+    /* Reduced to make room for buttons */
     max-width: 90vw;
-    object-fit: contain; /* Ensure image isn't distorted */
+    object-fit: contain;
+    /* Ensure image isn't distorted */
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    margin-bottom: 1.5rem; /* Space between image and buttons */
+    margin-bottom: 1.5rem;
+    /* Space between image and buttons */
 }
 
 .close-lightbox {
@@ -690,7 +695,8 @@ nav {
     font-size: 2rem;
     color: white;
     cursor: pointer;
-    z-index: 1010; /* Ensure above everything */
+    z-index: 1010;
+    /* Ensure above everything */
 }
 
 /* Modal Actions Container */
@@ -1353,7 +1359,7 @@ footer {
     }
 
     .collage-img {
-        height: 18vh;
+        height: 15vh;
         /* Smaller images */
         opacity: 0.5;
         /* Reduce visual noise */
@@ -1413,7 +1419,21 @@ footer {
         max-height: 100vh;
         border: none;
         border-radius: 0;
-        padding: 2rem;
+        padding: 2rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .article-read-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Help images in lightbox fit better on mobile with buttons */
+    .lightbox.open .lightbox-img {
+        max-height: 65vh;
+        margin-bottom: 1rem;
     }
 
     .gallery-intro {
@@ -1463,22 +1483,48 @@ footer {
     pointer-events: auto;
 }
 
-/* Modal Like Button */
+/* Modal Actions Container */
+.modal-actions-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    margin-top: 2rem;
+    padding-bottom: 2rem;
+    /* Ensure space at bottom */
+    flex-wrap: wrap;
+    /* Wrap on small screens */
+    pointer-events: auto;
+}
+
+@media (max-width: 500px) {
+    .modal-actions-container {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0 1rem 2rem;
+    }
+
+    .modal-like-btn {
+        justify-content: center;
+        width: 100%;
+    }
+}
+
 .modal-like-btn {
     display: inline-flex;
     align-items: center;
     gap: 10px;
     background: rgba(255, 255, 255, 0.05);
-    padding: 10px 20px;
+    padding: 12px 24px;
     border-radius: 30px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: white;
-    margin-top: 20px;
     font-family: var(--font-sans);
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     transition: all 0.3s;
+    cursor: pointer;
 }
 
 .modal-like-btn:hover {
