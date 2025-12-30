@@ -471,6 +471,8 @@ function renderGallery() {
 
     const articles = localArticles;
     let items = [];
+    const now = Date.now();
+    const FOUR_DAYS_MS = 4 * 24 * 60 * 60 * 1000;
 
     // Add images
     for (let i = 1; i <= totalImages; i++) {
@@ -479,16 +481,23 @@ function renderGallery() {
             type: 'image',
             src: encodeURI(imgSrc),
             id: `img-${i}`,
-            category: 'poetry'
+            category: 'poetry',
+            isRecent: false // Static images are considered legacy
         });
     }
 
     // Add text articles
     articles.forEach(art => {
+        const timestamp = art.timestamp ? art.timestamp.toDate().getTime() : now;
+        const isRecent = (now - timestamp) < FOUR_DAYS_MS;
+        const isExpired = (now - timestamp) >= FOUR_DAYS_MS;
+
         items.push({
             type: 'text',
             ...art,
-            category: 'articles'
+            category: 'articles',
+            isRecent: isRecent,
+            isExpired: isExpired
         });
     });
 
@@ -498,6 +507,9 @@ function renderGallery() {
         const item = document.createElement('div');
         item.classList.add('gallery-item');
         item.dataset.category = data.category;
+
+        if (data.isRecent) item.classList.add('recent-item');
+        if (data.isExpired) item.classList.add('expired');
 
         if (data.type === 'image') {
             const img = document.createElement('img');
@@ -874,7 +886,11 @@ filterBtns.forEach(btn => {
         const items = document.querySelectorAll('.gallery-item');
 
         items.forEach(item => {
-            if (filter === 'all' || item.dataset.category === filter) {
+            const isMatch = (filter === 'all') ||
+                (filter === 'recent' && item.classList.contains('recent-item')) ||
+                (item.dataset.category === filter);
+
+            if (isMatch) {
                 item.style.display = 'block';
                 // Remove hidden class first for transition
                 item.classList.remove('hidden-filtered');

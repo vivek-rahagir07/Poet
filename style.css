@@ -572,6 +572,13 @@ nav {
     transform: translateY(0) scale(1);
 }
 
+.gallery-item.expired {
+    opacity: 0.3;
+    filter: grayscale(100%);
+    /* Extra visual cue */
+    transition: opacity 0.8s ease, filter 0.8s ease;
+}
+
 .gallery-item.hidden-filtered {
     opacity: 0 !important;
     transform: scale(0.8) translateY(20px) !important;
