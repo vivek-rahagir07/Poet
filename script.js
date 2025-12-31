@@ -321,6 +321,13 @@ function initGlobalWhispers() {
             const createCard = (data) => {
                 const card = document.createElement('div');
                 card.classList.add('whisper-card');
+
+                // Add randomized variety for organic feel
+                const tilts = ['tilt-left', 'tilt-right', 'tilt-none'];
+                const sizes = ['size-sm', 'size-md', 'size-lg'];
+                card.classList.add(tilts[Math.floor(Math.random() * tilts.length)]);
+                card.classList.add(sizes[Math.floor(Math.random() * sizes.length)]);
+
                 card.innerHTML = `
                     <div class="whisper-info">
                         <div class="whisper-meta">A Wayfarer whispered...</div>

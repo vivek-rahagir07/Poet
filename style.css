@@ -1961,30 +1961,60 @@ footer {
 }
 
 .whisper-card {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(212, 175, 55, 0.1);
     padding: 1.5rem;
-    border-radius: 6px;
+    border-radius: 8px;
     text-align: left;
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    border-left: 3px solid var(--accent-color);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    border-left: 2px solid var(--accent-color);
     display: flex;
     flex-direction: row;
-    /* Horizontal layout */
     align-items: center;
     gap: 1.5rem;
     width: 450px;
-    /* Wide card */
-    height: 100px;
-    /* Short card */
+    height: 110px;
     flex-shrink: 0;
     position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .whisper-card:hover {
-    background: rgba(255, 255, 255, 0.06);
-    transform: translateY(-5px);
-    border-left-width: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-8px) scale(1.02) !important;
+    border-color: var(--accent-color);
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.15);
+    z-index: 10;
+}
+
+/* Variety Classes */
+.whisper-card.tilt-left {
+    transform: rotate(-1.5deg);
+}
+
+.whisper-card.tilt-right {
+    transform: rotate(1.5deg);
+}
+
+.whisper-card.tilt-none {
+    transform: rotate(0deg);
+}
+
+.whisper-card.size-sm {
+    width: 380px;
+    height: 100px;
+}
+
+.whisper-card.size-md {
+    width: 450px;
+    height: 110px;
+}
+
+.whisper-card.size-lg {
+    width: 520px;
+    height: 120px;
 }
 
 .whisper-info {
@@ -2244,6 +2274,7 @@ footer {
         opacity: 0;
     }
 }
+
 /* --- Parchment Mode (Immersive Reading) --- */
 .parchment-active .article-read-modal {
     background: #f4ecd8 !important;
@@ -2259,7 +2290,7 @@ footer {
 .parchment-active .article-read-modal h2 {
     color: #1a1a1a !important;
     font-family: var(--font-serif) !important;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     padding-bottom: 1rem;
     margin-bottom: 2rem;
 }
@@ -2278,6 +2309,7 @@ footer {
         filter: blur(8px);
         transform: translateY(5px);
     }
+
     100% {
         opacity: 1;
         filter: blur(0);
@@ -2323,4 +2355,54 @@ footer {
 .parchment-active .lightbox-img {
     filter: sepia(0.4) contrast(1.1);
     transition: filter 0.5s ease;
+}
+/* Ambient Orbs for Whispers */
+.global-whispers-section {
+    position: relative;
+    z-index: 1; /* Above absolute orbs */
+}
+
+.whisper-bg-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    background: var(--accent-color);
+}
+
+.orb-1 {
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    left: -10px;
+    animation: drift Orb1 25s ease-in-out infinite alternate;
+}
+
+.orb-2 {
+    width: 400px;
+    height: 400px;
+    bottom: -150px;
+    right: -50px;
+    animation: driftOrb2 35s ease-in-out infinite alternate;
+}
+
+@keyframes driftOrb1 {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(150px, 100px) scale(1.2); }
+}
+
+@keyframes driftOrb2 {
+    0% { transform: translate(0, 0) scale(1.2); }
+    100% { transform: translate(-100px, -80px) scale(1); }
 }
