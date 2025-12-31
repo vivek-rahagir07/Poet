@@ -321,6 +321,7 @@ function initGlobalWhispers() {
             const createCard = (data) => {
                 const card = document.createElement('div');
                 card.classList.add('whisper-card');
+                card.style.cursor = 'pointer'; // Make it look clickable
 
                 // Add randomized variety for organic feel
                 const tilts = ['tilt-left', 'tilt-right', 'tilt-none'];
@@ -335,6 +336,14 @@ function initGlobalWhispers() {
                     </div>
                     <div class="whisper-date">${data.date || ''}</div>
                 `;
+
+                // Add click event to navigate to the post
+                card.addEventListener('click', () => {
+                    if (data.pieceId) {
+                        window.location.hash = data.pieceId;
+                    }
+                });
+
                 return card;
             };
 
