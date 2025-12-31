@@ -979,6 +979,18 @@ function initSubscription() {
     const subBtn = document.getElementById('sub-btn');
     const subEmail = document.getElementById('sub-email');
     const feedback = document.getElementById('sub-feedback');
+    const subModal = document.getElementById('sub-success-modal');
+    const closeSubModal = document.querySelector('.close-sub-modal');
+
+    // Close Modal Logic
+    if (closeSubModal && subModal) {
+        closeSubModal.addEventListener('click', () => {
+            subModal.classList.remove('open');
+        });
+        subModal.addEventListener('click', (e) => {
+            if (e.target === subModal) subModal.classList.remove('open');
+        });
+    }
 
     if (!subBtn || !subEmail) return;
 
@@ -1002,7 +1014,14 @@ function initSubscription() {
 
             // Cinematic Success
             subEmail.value = "";
-            showFeedback("You are now part of the silence. ✨");
+
+            // Show Modal
+            if (subModal) {
+                subModal.classList.add('open');
+            } else {
+                showFeedback("You are now part of the silence. ✨");
+            }
+
             triggerHeartPopup(); // Little celebration
 
             setTimeout(() => {
@@ -1019,6 +1038,7 @@ function initSubscription() {
     });
 
     function showFeedback(msg) {
+        if (!feedback) return;
         feedback.innerText = msg;
         feedback.classList.add('visible');
         setTimeout(() => {
