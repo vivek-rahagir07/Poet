@@ -689,6 +689,40 @@ nav {
     justify-content: center;
 }
 
+.item-actions,
+.article-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    z-index: 20;
+    pointer-events: auto;
+}
+
+.share-btn {
+    cursor: pointer;
+    color: #fff;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+}
+
+.share-btn:hover {
+    color: var(--accent-color);
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+.article-actions-row .share-btn {
+    color: #aaa;
+}
+
+.article-actions-row .share-btn:hover {
+    color: var(--accent-color);
+}
+
 .modal-like-btn {
     padding: 0.8rem 2rem;
     border-radius: 30px;

@@ -141,6 +141,51 @@ function triggerHeartPopup() {
         }, i * 100); // Slight stagger for cinematic feel
     }
 }
+
+// --- Sharing System ---
+async function sharePiece(data) {
+    const shareTitle = data.type === 'image' ? "Echoes of Silence - Poetry Piece" : data.title;
+    const shareText = data.type === 'image' ? "Check out this beautiful poetry piece from Rahagir." : data.body.substring(0, 100) + "...";
+    const shareUrl = window.location.href; // In a real app, this would be a deep link to the specific piece
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: shareTitle,
+                text: shareText,
+                url: shareUrl,
+            });
+        } catch (err) {
+            console.log('Error sharing:', err);
+        }
+    } else {
+        // Fallback: Copy to clipboard
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            showGlobalFeedback("Link copied to clipboard! ✨");
+        } catch (err) {
+            console.error('Failed to copy: ', err);
+        }
+    }
+}
+
+function showGlobalFeedback(msg) {
+    const feedback = document.getElementById('sub-feedback'); // Reuse subscription feedback for general one
+    if (!feedback) return;
+
+    feedback.innerText = msg;
+    feedback.classList.add('visible');
+
+    // Smoothly scroll to feedback if it's far
+    const rect = feedback.getBoundingClientRect();
+    if (rect.top < 0 || rect.bottom > window.innerHeight) {
+        feedback.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    setTimeout(() => {
+        feedback.classList.remove('visible');
+    }, 4000);
+}
 function initRealtimeUpdates() {
     db.collection("articles").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
         localArticles = snapshot.docs.map(doc => ({
@@ -536,19 +581,31 @@ function renderGallery() {
             overlay.classList.add('item-overlay');
             overlay.innerHTML = `
                 <span class="view-label">View Piece</span>
-                <div class="like-interaction" data-id="${data.id}">
-                    <span class="like-heart ${likedItems[data.id] ? 'liked' : ''}">❤</span>
-                    <span class="like-count">${galleryLikes[data.id] || 0}</span>
+                <div class="item-actions">
+                    <div class="like-interaction" data-id="${data.id}">
+                        <span class="like-heart ${likedItems[data.id] ? 'liked' : ''}">❤</span>
+                        <span class="like-count">${galleryLikes[data.id] || 0}</span>
+                    </div>
+                    <div class="share-btn" title="Share Piece">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45-1-1-1z"/>
+                        </svg>
+                    </div>
                 </div>
             `;
 
             item.appendChild(img);
             item.appendChild(overlay);
 
-            // Separate click for like vs view
+            // Separate clicks for like vs share vs view
             overlay.querySelector('.like-interaction').addEventListener('click', (e) => {
                 e.stopPropagation();
                 toggleLike(data.id);
+            });
+
+            overlay.querySelector('.share-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                sharePiece(data);
             });
 
             item.addEventListener('click', () => openLightbox(data.src, data.id));
@@ -561,9 +618,16 @@ function renderGallery() {
                 <div class="article-excerpt">${data.body}</div>
                 <div class="article-footer">
                     <span class="read-more">Read Piece</span>
-                    <div class="like-interaction" data-id="${data.id}">
-                        <span class="like-heart ${likedItems[data.id] ? 'liked' : ''}">❤</span>
-                        <span class="like-count">${galleryLikes[data.id] || 0}</span>
+                    <div class="article-actions-row">
+                        <div class="like-interaction" data-id="${data.id}">
+                            <span class="like-heart ${likedItems[data.id] ? 'liked' : ''}">❤</span>
+                            <span class="like-count">${galleryLikes[data.id] || 0}</span>
+                        </div>
+                        <div class="share-btn" title="Share Piece">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45-1-1-1z"/>
+                            </svg>
+                        </div>
                     </div>
                 </div>
             `;
@@ -571,6 +635,11 @@ function renderGallery() {
             item.querySelector('.like-interaction').addEventListener('click', (e) => {
                 e.stopPropagation();
                 toggleLike(data.id);
+            });
+
+            item.querySelector('.share-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                sharePiece(data);
             });
 
             item.addEventListener('click', () => openTextModal(data));
@@ -1056,7 +1125,7 @@ function initSubscription() {
                 showFeedback("You are now part of the silence. ✨");
             }
 
-            triggerHeartPopup(); // Little celebration (existing red hearts)
+            triggerHeartPopup();
 
             setTimeout(() => {
                 subBtn.disabled = false;
@@ -1083,9 +1152,9 @@ function initSubscription() {
 
 // Global Initialization
 document.addEventListener('DOMContentLoaded', () => {
-    renderGallery(); // Render static images immediately
-    initRealtimeUpdates(); // Start listening for cloud articles
-    initLikeSystem(); // Start infinite love sync
+    renderGallery();
+    initRealtimeUpdates();
+    initLikeSystem();
     initHeroCollage();
     initGlobalWhispers();
     initWriterUI();
