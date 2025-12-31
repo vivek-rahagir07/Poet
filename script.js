@@ -1048,7 +1048,7 @@ filterBtns.forEach(btn => {
 
             if (isMatch) {
                 item.style.display = 'block';
-                // Remove hidden class first for transition
+
                 item.classList.remove('hidden-filtered');
                 setTimeout(() => item.classList.add('visible'), 10);
             } else {
