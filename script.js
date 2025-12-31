@@ -144,19 +144,42 @@ function triggerHeartPopup() {
 
 // --- Sharing System ---
 async function sharePiece(data) {
+    const baseUrl = window.location.origin + window.location.pathname;
+    const shareUrl = `${baseUrl}#${data.id}`;
+
     const shareTitle = data.type === 'image' ? "Echoes of Silence - Poetry Piece" : data.title;
-    const shareText = data.type === 'image' ? "Check out this beautiful poetry piece from Rahagir." : data.body.substring(0, 100) + "...";
-    const shareUrl = window.location.href; // In a real app, this would be a deep link to the specific piece
+    const shareText = data.type === 'image'
+        ? `Check out this beautiful poetry piece from Rahagir: ${shareUrl}`
+        : `"${data.title}"\n\n${data.body.substring(0, 150)}...\n\nRead more at: ${shareUrl}`;
 
     if (navigator.share) {
+        const shareData = {
+            title: shareTitle,
+            text: shareText,
+            url: shareUrl,
+        };
+
+        // Attempt to share image file if supported
+        if (data.type === 'image') {
+            try {
+                const response = await fetch(data.src);
+                const blob = await response.blob();
+                const file = new File([blob], 'poetry-piece.jpg', { type: blob.type });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    shareData.files = [file];
+                }
+            } catch (e) {
+                console.log("File share not supported or failed:", e);
+            }
+        }
+
         try {
-            await navigator.share({
-                title: shareTitle,
-                text: shareText,
-                url: shareUrl,
-            });
+            await navigator.share(shareData);
         } catch (err) {
-            console.log('Error sharing:', err);
+            if (err.name !== 'AbortError') {
+                console.log('Error sharing:', err);
+            }
         }
     } else {
         // Fallback: Copy to clipboard
@@ -193,8 +216,35 @@ function initRealtimeUpdates() {
             ...doc.data()
         }));
         renderGallery();
+
+        // Handle deep link once articles are loaded
+        if (!window._initialDeepLinkHandled) {
+            handleDeepLinking();
+            window._initialDeepLinkHandled = true;
+        }
     });
 }
+
+function handleDeepLinking() {
+    const hash = window.location.hash.substring(1);
+    if (!hash) return;
+
+    // Check if it's an image from static gallery
+    if (hash.startsWith('img-')) {
+        const idParts = hash.split('-');
+        const index = idParts[1];
+        const src = `${imageFolder}/${index}.jpg`;
+        openLightbox(src, hash);
+    } else {
+        // Check if it's a dynamic article
+        const article = localArticles.find(a => a.id === hash);
+        if (article) {
+            openTextModal(article);
+        }
+    }
+}
+
+window.addEventListener('hashchange', handleDeepLinking);
 
 async function saveArticleToFirebase(title, body) {
     try {
@@ -714,6 +764,9 @@ function openLightbox(src, id) {
     actionsContainer.classList.add('modal-actions-container');
 
     actionsContainer.innerHTML = `
+        <button class="immersion-toggle" id="immersion-toggle">
+            <span>✨</span> <span>Immersive</span>
+        </button>
         <button class="modal-like-btn like-interaction" data-id="${id}">
             <span class="like-heart ${likedItems[id] ? 'liked' : ''}">❤</span>
             <span>Like Piece</span>
@@ -723,6 +776,10 @@ function openLightbox(src, id) {
             <span>Go Back</span>
         </button>
     `;
+
+    actionsContainer.querySelector('#immersion-toggle').addEventListener('click', () => {
+        lightbox.classList.toggle('parchment-active');
+    });
 
     actionsContainer.querySelector('.like-interaction').addEventListener('click', () => toggleLike(id));
     actionsContainer.querySelector('#lightbox-go-back').addEventListener('click', closeLightbox);
@@ -786,6 +843,9 @@ function openTextModal(article) {
         <h2>${article.title}</h2>
         <p>${article.body}</p>
         <div class="modal-actions-container">
+            <button class="immersion-toggle" id="text-immersion-toggle">
+                <span>✨</span> <span>Immersive</span>
+            </button>
             <button class="modal-like-btn like-interaction" data-id="${article.id}">
                 <span class="like-heart ${likedItems[article.id] ? 'liked' : ''}">❤</span>
                 <span>Like Piece</span>
@@ -808,6 +868,10 @@ function openTextModal(article) {
             </div>
         </div>
     `;
+    content.querySelector('#text-immersion-toggle').addEventListener('click', () => {
+        lightbox.classList.toggle('parchment-active');
+    });
+
     content.querySelector('.like-interaction').addEventListener('click', () => toggleLike(article.id));
     content.querySelector('#modal-go-back').addEventListener('click', closeLightbox);
 
@@ -836,6 +900,7 @@ function openTextModal(article) {
 
 function closeLightbox() {
     lightbox.classList.remove('open');
+    lightbox.classList.remove('parchment-active');
     document.body.style.overflow = 'auto';
 
     if (window._currentUnsubscribe) {
