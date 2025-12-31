@@ -14,7 +14,7 @@ const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // Image Configuration
-const totalImages = 23;
+const totalImages = 24;
 const imageFolder = 'my galary';
 const galleryGrid = document.getElementById('gallery-grid');
 let localArticles = [];
