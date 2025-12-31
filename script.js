@@ -960,9 +960,9 @@ if (writerTrigger) {
         }
     });
 
-    // Secret shortcut to show/hide the writer button: Cmd + Shift + W
+    // Secret shortcut to show/hide the writer button: Cmd + Shift + E
     window.addEventListener('keydown', (e) => {
-        if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.code === 'KeyW') {
+        if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.code === 'KeyE') {
             // Disable for mobile/small screens
             if (window.innerWidth <= 768) return;
 
