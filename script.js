@@ -771,9 +771,6 @@ function openLightbox(src, id) {
     actionsContainer.classList.add('modal-actions-container');
 
     actionsContainer.innerHTML = `
-        <button class="immersion-toggle" id="immersion-toggle">
-            <span>✨</span> <span>Immersive</span>
-        </button>
         <button class="modal-like-btn like-interaction" data-id="${id}">
             <span class="like-heart ${likedItems[id] ? 'liked' : ''}">❤</span>
             <span>Like Piece</span>
@@ -783,10 +780,6 @@ function openLightbox(src, id) {
             <span>Go Back</span>
         </button>
     `;
-
-    actionsContainer.querySelector('#immersion-toggle').addEventListener('click', () => {
-        lightbox.classList.toggle('parchment-active');
-    });
 
     actionsContainer.querySelector('.like-interaction').addEventListener('click', () => toggleLike(id));
     actionsContainer.querySelector('#lightbox-go-back').addEventListener('click', closeLightbox);
@@ -850,9 +843,6 @@ function openTextModal(article) {
         <h2>${article.title}</h2>
         <p>${article.body}</p>
         <div class="modal-actions-container">
-            <button class="immersion-toggle" id="text-immersion-toggle">
-                <span>✨</span> <span>Immersive</span>
-            </button>
             <button class="modal-like-btn like-interaction" data-id="${article.id}">
                 <span class="like-heart ${likedItems[article.id] ? 'liked' : ''}">❤</span>
                 <span>Like Piece</span>
@@ -875,9 +865,6 @@ function openTextModal(article) {
             </div>
         </div>
     `;
-    content.querySelector('#text-immersion-toggle').addEventListener('click', () => {
-        lightbox.classList.toggle('parchment-active');
-    });
 
     content.querySelector('.like-interaction').addEventListener('click', () => toggleLike(article.id));
     content.querySelector('#modal-go-back').addEventListener('click', closeLightbox);
@@ -907,7 +894,6 @@ function openTextModal(article) {
 
 function closeLightbox() {
     lightbox.classList.remove('open');
-    lightbox.classList.remove('parchment-active');
     document.body.style.overflow = 'auto';
 
     if (window._currentUnsubscribe) {
