@@ -576,12 +576,24 @@ function renderGallery() {
     const now = Date.now();
     const FOUR_DAYS_MS = 4 * 24 * 60 * 60 * 1000;
 
+    // Create a Set of existing dynamic image sources for deduplication
+    const dynamicImageSources = new Set(
+        articles.filter(a => a.type === 'image').map(a => a.src)
+    );
+
     // Add images
     for (let i = 1; i <= totalImages; i++) {
         const imgSrc = `${imageFolder}/${i}.jpg`;
+        const encodedSrc = encodeURI(imgSrc);
+
+        // Skip if this image is already promoted (exists in dynamic articles)
+        if (dynamicImageSources.has(encodedSrc) || dynamicImageSources.has(imgSrc)) {
+            continue;
+        }
+
         items.push({
             type: 'image',
-            src: encodeURI(imgSrc),
+            src: encodedSrc,
             id: `img-${i}`,
             category: 'poetry',
             isRecent: false // Static images are considered legacy
