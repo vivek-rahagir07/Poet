@@ -239,7 +239,11 @@ function handleDeepLinking() {
         // Check if it's a dynamic article
         const article = localArticles.find(a => a.id === hash);
         if (article) {
-            openTextModal(article);
+            if (article.type === 'image') {
+                openLightbox(article.src, article.id);
+            } else {
+                openTextModal(article);
+            }
         }
     }
 }
