@@ -974,6 +974,38 @@ if (audio && soundToggle) {
     startAudio();
 }
 
+// --- Golden Rain Hearts Animation ---
+function triggerGoldenRain() {
+    const heartCount = 30; // Number of hearts to rain
+    const duration = 4000; // Total duration of the rain effect
+
+    for (let i = 0; i < heartCount; i++) {
+        setTimeout(() => {
+            const heart = document.createElement('div');
+            heart.classList.add('golden-heart');
+            heart.innerHTML = '💛';
+
+            // Random horizontal position
+            const startX = Math.random() * window.innerWidth;
+            heart.style.left = `${startX}px`;
+            heart.style.top = '-50px';
+
+            // Random animation delay and duration for variety
+            const randomDelay = Math.random() * 0.5;
+            const randomDuration = 2.5 + Math.random() * 1;
+            heart.style.animationDelay = `${randomDelay}s`;
+            heart.style.animationDuration = `${randomDuration}s`;
+
+            document.body.appendChild(heart);
+
+            // Cleanup after animation
+            setTimeout(() => {
+                heart.remove();
+            }, (randomDuration + randomDelay) * 1000);
+        }, i * (duration / heartCount)); // Stagger the hearts
+    }
+}
+
 // --- Subscription System ---
 function initSubscription() {
     const subBtn = document.getElementById('sub-btn');
@@ -1018,11 +1050,13 @@ function initSubscription() {
             // Show Modal
             if (subModal) {
                 subModal.classList.add('open');
+                // Trigger golden rain hearts
+                triggerGoldenRain();
             } else {
                 showFeedback("You are now part of the silence. ✨");
             }
 
-            triggerHeartPopup(); // Little celebration
+            triggerHeartPopup(); // Little celebration (existing red hearts)
 
             setTimeout(() => {
                 subBtn.disabled = false;
