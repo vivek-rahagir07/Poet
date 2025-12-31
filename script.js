@@ -638,6 +638,7 @@ function renderGallery() {
             overlay.classList.add('item-overlay');
             overlay.innerHTML = `
                 <span class="view-label">View Piece</span>
+                <button class="admin-promote-btn" title="Push to Recent">⚡ Promote</button>
                 <div class="item-actions">
                     <div class="like-interaction" data-id="${data.id}">
                         <span class="like-heart ${likedItems[data.id] ? 'liked' : ''}">❤</span>
@@ -655,6 +656,10 @@ function renderGallery() {
             item.appendChild(overlay);
 
             // Separate clicks for like vs share vs view
+            overlay.querySelector('.admin-promote-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                promoteToRecent(data);
+            });
             overlay.querySelector('.like-interaction').addEventListener('click', (e) => {
                 e.stopPropagation();
                 toggleLike(data.id);
@@ -969,6 +974,7 @@ if (writerTrigger) {
             e.preventDefault();
             const isHidden = window.getComputedStyle(writerTrigger).display === 'none';
             writerTrigger.style.display = isHidden ? 'flex' : 'none';
+            document.body.classList.toggle('admin-mode', isHidden); // Toggle Admin Mode
 
             if (isHidden) {
                 console.log("Writer access granted. ✨");
@@ -1205,6 +1211,43 @@ function initSubscription() {
         setTimeout(() => {
             feedback.classList.remove('visible');
         }, 4000);
+    }
+}
+
+// --- Admin Promotion Feature ---
+async function promoteToRecent(data) {
+    const confirmPromote = confirm("Push this photo to Recent? It will appear at the top.");
+    if (!confirmPromote) return;
+
+    try {
+        if (data.type === 'image') {
+            // Check if it's already a dynamic article
+            if (data.timestamp) {
+                // Update existing
+                await db.collection('articles').doc(data.id).update({
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } else {
+                // It's a static image, create a new dynamic entry
+                await db.collection('articles').add({
+                    type: 'image',
+                    src: data.src,
+                    title: 'Featured Image', // Optional title
+                    category: 'poetry', // Or photography
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+            alert("Promoted to Recents! ✨");
+        } else {
+            // Text article promotion
+            await db.collection('articles').doc(data.id).update({
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("Article Bumped to Top! 🖊️");
+        }
+    } catch (e) {
+        console.error("Promotion failed:", e);
+        alert("Failed to promote.");
     }
 }
 

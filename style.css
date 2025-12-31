@@ -2330,3 +2330,33 @@ footer {
         transform: translate(-100px, -80px) scale(1);
     }
 }
+/* Admin Promote Button */
+.admin-promote-btn {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(212, 175, 55, 0.9);
+    color: #000;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 100;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.admin-promote-btn:hover {
+    transform: scale(1.1);
+    background: #fff;
+    color: var(--accent-color);
+}
+
+/* Show when admin mode is active */
+body.admin-mode .admin-promote-btn {
+    display: block;
+}
