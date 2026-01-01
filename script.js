@@ -631,9 +631,9 @@ function renderGallery() {
         const isExpired = !isRecent; // Force fading for anything not in the top 4 recent
 
         items.push({
-            type: 'text',
+            type: 'text', // Default
+            category: 'articles', // Default
             ...art,
-            category: 'articles',
             isRecent: isRecent,
             isExpired: isExpired
         });
