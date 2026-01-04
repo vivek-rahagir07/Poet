@@ -86,40 +86,7 @@ body {
     }
 }
 
-/* Visit Counter in Nav */
-.visit-counter-container {
-    position: absolute;
-    /* Position it relatively to the likes container or center but offset */
-    left: calc(50% + 80px);
-    /* Offset to the right of the likes container */
-    top: 2rem;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 6px 15px;
-    border-radius: 20px;
-    border: 1px solid rgba(212, 175, 55, 0.2);
-    font-family: var(--font-sans);
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
-    color: var(--accent-color);
-    transition: all 0.3s ease;
-    cursor: default;
-}
 
-.visit-counter-container .eye-icon {
-    font-size: 1rem;
-    animation: pulseSmall 3s infinite reverse;
-    /* Slight variation */
-}
-
-/* Adjust the existing likes container to be offset left */
-.global-likes-container {
-    left: calc(50% - 80px);
-    /* Offset to the left */
-}
 
 /* Preloader */
 .preloader {
