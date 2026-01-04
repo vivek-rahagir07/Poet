@@ -44,6 +44,48 @@ function initLikeSystem() {
     });
 }
 
+function initVisitCounter() {
+    const visitRef = db.collection("site_stats").doc("global_visits");
+    const visitKey = 'poet_visit_recorded_v1';
+    let lastVisitCount = 0;
+
+    // Increment if new visitor
+    if (!localStorage.getItem(visitKey)) {
+        localStorage.setItem(visitKey, 'true');
+
+        // Use a transaction/increment to ensure accuracy
+        visitRef.set({ count: firebase.firestore.FieldValue.increment(1) }, { merge: true })
+            .catch(err => console.error("Error incrementing visits:", err));
+    }
+
+    // Real-time listener
+    visitRef.onSnapshot((doc) => {
+        if (doc.exists) {
+            const INITIAL_OFFSET = 56;
+            const count = (doc.data().count || 0) + INITIAL_OFFSET;
+            const counterEl = document.querySelector('.total-visits-count');
+
+            // Live Detection: If count increases (and it's not the first load), show feedback
+            if (lastVisitCount !== 0 && count > lastVisitCount) {
+                showGlobalFeedback("A new shadow has entered... 👁");
+                // Optional: slight eye pulse
+                const eyeIcon = document.querySelector('.eye-icon');
+                if (eyeIcon) {
+                    eyeIcon.style.animation = 'none';
+                    eyeIcon.offsetHeight; /* trigger reflow */
+                    eyeIcon.style.animation = 'pulseSmall 0.5s ease';
+                }
+            }
+
+            if (counterEl) {
+                animateValue(counterEl, parseInt(counterEl.textContent) || 0, count, 2000);
+            }
+
+            lastVisitCount = count;
+        }
+    });
+}
+
 function updateLikeUI(totalLikes = null) {
     document.querySelectorAll('.like-interaction').forEach(el => {
         const id = el.dataset.id;
@@ -1285,4 +1327,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initGlobalWhispers();
     initWriterUI();
     initSubscription(); // New subscription system
+    initVisitCounter();
 });

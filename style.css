@@ -86,6 +86,41 @@ body {
     }
 }
 
+/* Visit Counter in Nav */
+.visit-counter-container {
+    position: absolute;
+    /* Position it relatively to the likes container or center but offset */
+    left: calc(50% + 80px);
+    /* Offset to the right of the likes container */
+    top: 2rem;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    color: var(--accent-color);
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.visit-counter-container .eye-icon {
+    font-size: 1rem;
+    animation: pulseSmall 3s infinite reverse;
+    /* Slight variation */
+}
+
+/* Adjust the existing likes container to be offset left */
+.global-likes-container {
+    left: calc(50% - 80px);
+    /* Offset to the left */
+}
+
 /* Preloader */
 .preloader {
     position: fixed;
@@ -2330,9 +2365,11 @@ footer {
         transform: translate(-100px, -80px) scale(1);
     }
 }
+
 /* Admin Promote Button */
 .admin-promote-btn {
-    display: none; /* Hidden by default */
+    display: none;
+    /* Hidden by default */
     position: absolute;
     top: 10px;
     right: 10px;
@@ -2346,7 +2383,7 @@ footer {
     z-index: 100;
     font-size: 0.8rem;
     text-transform: uppercase;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     transition: transform 0.2s, background 0.2s;
 }
 
