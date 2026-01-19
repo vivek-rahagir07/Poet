@@ -1,15 +1,30 @@
-// --- Firebase Setup (Compat) ---
-const firebaseConfig = {
-    apiKey: "AIzaSyAT2O4co4kTlDv6w1Jp4pGPjkfBk94D4fk",
-    authDomain: "poet-cb8dc.firebaseapp.com",
-    projectId: "poet-cb8dc",
-    storageBucket: "poet-cb8dc.firebasestorage.app",
-    messagingSenderId: "1034470030320",
-    appId: "1:1034470030320:web:c6fb3a2c725c298d247b35",
-    measurementId: "G-XK16TTH47N"
-};
+// --- Security & Anti-Debug Layer ---
+(function () {
+    // Disable right-click
+    document.addEventListener('contextmenu', e => e.preventDefault());
 
-// Initialize Firebase using global namespace
+    // Disable common DevTools shortcuts
+    document.addEventListener('keydown', e => {
+        if (
+            e.keyCode === 123 || // F12
+            (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || // Ctrl+Shift+I/J
+            (e.metaKey && e.altKey && (e.keyCode === 73 || e.keyCode === 74)) || // Cmd+Alt+I/J
+            (e.ctrlKey && e.keyCode === 85) // Ctrl+U
+        ) {
+            e.preventDefault();
+        }
+    });
+
+    // Clear console periodically to discourage inspection
+    setInterval(() => {
+        if (window.outerHeight - window.innerHeight > 160 || window.outerWidth - window.innerWidth > 160) {
+            console.clear();
+            console.log("%cThe Wayfarer's path is not found in the console.", "color: #D4AF37; font-size: 18px; font-weight: bold;");
+        }
+    }, 1000);
+})();
+
+// Initialize Firebase using global namespace (config loaded via index.html)
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
