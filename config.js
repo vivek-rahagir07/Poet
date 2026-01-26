@@ -12,13 +12,13 @@
     // Measurement: G-XK16TTH47N
 
     const _c = {
-        _a: "ayYvICUfLCk3KjYpLTMxIzQzNj8iPTs8Jy4pLyc2PyYkPyY=", // apiKey
-        _b: "IyksLz4mKCY2PCYhKSwqIyUvICsrKiMkLCkq",             // authDomain
-        _c: "IyksLz4mKCY2PCY=",                                 // projectId
-        _d: "IyksLz4mKCY2PCYhKSwqIyUvICsrKiMkLCkqLTMvICskLA==", // storageBucket
-        _e: "KzAyLDI1Kio5MzA=",                                 // messagingSenderId
-        _f: "KzhfKzAyLDI1Kio5MzA6Y28vYmY0cmJiMGkyejI0YmkyN2I0bis=", // appId
-        _g: "TT4nSisyNi82Tj40TA=="                             // measurementId
+        _a: "a2NQS3lTa34YZR5JRR5BfkZuXBxdG2BaHlptekBBTGhBEx5uHkxB", // apiKey
+        _b: "WkVPXgdJSBJOSQRMQ1hPSEtZT0taWgRJRUc=",                 // authDomain
+        _c: "WkVPXgdJSBJOSQ==",                                     // projectId
+        _d: "WkVPXgdJSBJOSQRMQ1hPSEtZT1leRVhLTU8ES1pa",             // storageBucket
+        _e: "GxoZHh4dGhoZGhkYGg==",                                 // messagingSenderId
+        _f: "GxAbGhkeHh0aGhkaGRgaEF1PSBBJHExIGUsYSR0YH0kYExJOGB4dSBkf", // appId
+        _g: "bQdyYRscfn5iHh1k"                                     // measurementId
     };
 
     window.firebaseConfig = {

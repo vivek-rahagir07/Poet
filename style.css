@@ -272,10 +272,24 @@ nav {
 }
 
 .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-family: var(--font-serif);
     font-size: 1.5rem;
     letter-spacing: 0.2em;
     font-weight: 600;
+}
+
+.nav-logo {
+    height: 45px;
+    width: auto;
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+    transition: transform 0.3s ease;
+}
+
+.logo:hover .nav-logo {
+    transform: scale(1.1) rotate(5deg);
 }
 
 .links a {

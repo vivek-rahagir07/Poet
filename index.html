@@ -24,6 +24,24 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d4af37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Poet">
+    <link rel="apple-touch-icon" href="app_logo.png">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered!'))
+                    .catch(err => console.log('Service Worker registration failed: ', err));
+            });
+        }
+    </script>
 </head>
 
 <body>
@@ -44,7 +62,10 @@
     <div class="cursor-outline"></div>
 
     <nav>
-        <div class="logo">POET</div>
+        <div class="logo">
+            <img src="app_logo.png" alt="Poet Logo" class="nav-logo">
+            <span>POET</span>
+        </div>
         <div class="global-likes-container" id="global-likes-stats" title="Total Love Received">
             <span class="heart-icon">❤</span>
             <span class="total-likes-count">0</span>
