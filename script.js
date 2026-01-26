@@ -1007,6 +1007,27 @@ if (writerTrigger) {
         }
     });
 
+    const testNotifyBtn = document.getElementById('test-notify-btn');
+    if (testNotifyBtn) {
+        testNotifyBtn.addEventListener('click', () => {
+            if (!('Notification' in window)) {
+                alert("This browser does not support notifications.");
+                return;
+            }
+
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    new Notification("Wayfarer's Signal", {
+                        body: "A new whisper has been published. ✨",
+                        icon: "app_logo.png"
+                    });
+                } else {
+                    alert("Permission denied. Enable notifications in settings.");
+                }
+            });
+        });
+    }
+
     // Secret shortcut to show/hide the writer button: Cmd + Shift + E
     window.addEventListener('keydown', (e) => {
         if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.code === 'KeyE') {
@@ -1303,4 +1324,32 @@ document.addEventListener('DOMContentLoaded', () => {
     initWriterUI();
     initSubscription(); // New subscription system
 
+    // Notification System
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+        const messaging = firebase.messaging();
+
+        const requestPermission = async () => {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    console.log('Notification permission granted.');
+                    const token = await messaging.getToken({
+                        vapidKey: 'BMJ8jI_J-k9vW2Z5X_4J_5Q-uX9_J_k9vW2Z5X_4J_5Q' // Placeholder VAPID key
+                    });
+                    if (token) {
+                        console.log('FCM Token:', token);
+                        // Save token to Firestore for targeting
+                        await db.collection('notification_tokens').doc(token).set({
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                }
+            } catch (err) {
+                console.log('Unable to get permission/token', err);
+            }
+        };
+
+        // Delay prompt for better UX
+        setTimeout(requestPermission, 5000);
+    }
 });

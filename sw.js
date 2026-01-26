@@ -36,3 +36,37 @@ self.addEventListener('fetch', (event) => {
         })
     );
 });
+
+// Handle Push Notifications
+self.addEventListener('push', (event) => {
+    let data = { title: 'New from Poet', body: 'A new whisper echoes in the silence...' };
+    if (event.data) {
+        try {
+            data = event.data.json();
+        } catch (e) {
+            data.body = event.data.text();
+        }
+    }
+
+    const options = {
+        body: data.body,
+        icon: 'app_logo.png',
+        badge: 'app_logo.png',
+        vibrate: [100, 50, 100],
+        data: {
+            url: self.location.origin + '/index.html'
+        }
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, options)
+    );
+});
+
+// Handle notification click
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    event.waitUntil(
+        clients.openWindow(event.notification.data.url)
+    );
+});
