@@ -813,11 +813,34 @@ function openLightbox(src, id) {
 
     lightboxImg.src = src;
 
-    // Add modal actions container (Like + Go Back)
+    // Zoom Logic
+    let currentZoom = 1;
+    const ZOOM_STEP = 0.25;
+    const MAX_ZOOM = 3;
+    const MIN_ZOOM = 0.5;
+
+    const updateImageZoom = () => {
+        lightboxImg.style.transform = `scale(${currentZoom})`;
+        // If zoomed in, allow scrolling/overflow
+        if (currentZoom > 1) {
+            lightboxImg.style.cursor = 'zoom-out';
+            lightbox.style.alignItems = 'flex-start'; // Align top when zoomed to allow scrolling
+        } else {
+            lightboxImg.style.cursor = 'zoom-in';
+            lightbox.style.alignItems = 'center';
+        }
+    };
+
+    // Add modal actions container (Like + Zoom + Go Back)
     const actionsContainer = document.createElement('div');
     actionsContainer.classList.add('modal-actions-container');
 
     actionsContainer.innerHTML = `
+        <div class="zoom-controls">
+            <button class="modal-like-btn zoom-btn" id="zoom-in" title="Zoom In"><span>+</span></button>
+            <button class="modal-like-btn zoom-btn" id="zoom-out" title="Zoom Out"><span>−</span></button>
+            <button class="modal-like-btn zoom-btn" id="zoom-reset" title="Reset"><span>↺</span></button>
+        </div>
         <button class="modal-like-btn like-interaction" data-id="${id}">
             <span class="like-heart ${likedItems[id] ? 'liked' : ''}">❤</span>
             <span>Like Piece</span>
@@ -827,6 +850,28 @@ function openLightbox(src, id) {
             <span>Go Back</span>
         </button>
     `;
+
+    actionsContainer.querySelector('#zoom-in').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (currentZoom < MAX_ZOOM) {
+            currentZoom += ZOOM_STEP;
+            updateImageZoom();
+        }
+    });
+
+    actionsContainer.querySelector('#zoom-out').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (currentZoom > MIN_ZOOM) {
+            currentZoom -= ZOOM_STEP;
+            updateImageZoom();
+        }
+    });
+
+    actionsContainer.querySelector('#zoom-reset').addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentZoom = 1;
+        updateImageZoom();
+    });
 
     actionsContainer.querySelector('.like-interaction').addEventListener('click', () => toggleLike(id));
     actionsContainer.querySelector('#lightbox-go-back').addEventListener('click', closeLightbox);
@@ -950,6 +995,8 @@ function closeLightbox() {
 
     setTimeout(() => {
         lightboxImg.src = '';
+        lightboxImg.style.transform = 'scale(1)'; // Reset zoom
+        lightbox.style.alignItems = 'center'; // Reset alignment
         const existingText = lightbox.querySelector('.article-read-content');
         if (existingText) existingText.remove();
         const existingActions = lightbox.querySelector('.modal-actions-container');

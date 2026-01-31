@@ -1812,6 +1812,30 @@ footer {
     margin-bottom: 1.5rem;
     flex-shrink: 0;
     /* Don't shrink the image too much */
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+    transform-origin: center center;
+    cursor: zoom-in;
+}
+
+/* Zoom Controls Styles */
+.zoom-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.zoom-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0 !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    font-size: 1.2rem !important;
+    font-weight: bold !important;
+}
+
+.zoom-btn span {
+    line-height: 1;
 }
 
 /* Comment Section Styles */
