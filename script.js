@@ -29,7 +29,7 @@ const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // Image Configuration
-const totalImages = 25;
+const totalImages = 26;
 const imageFolder = 'my galary';
 const galleryGrid = document.getElementById('gallery-grid');
 let localArticles = [];
@@ -107,13 +107,12 @@ async function toggleLike(id) {
     } else {
         likedItems[id] = true;
         galleryLikes[id] = (galleryLikes[id] || 0) + 1;
-        triggerHeartPopup(); // Trigger cinematic popup
+        triggerHeartPopup(); 
     }
 
     localStorage.setItem('poet_liked_items', JSON.stringify(likedItems));
     updateLikeUI();
 
-    // Firestore Update
     const likeRef = db.collection("gallery_likes").doc(id);
     try {
         await db.runTransaction(async (transaction) => {
@@ -131,7 +130,7 @@ async function toggleLike(id) {
 }
 
 function triggerHeartPopup() {
-    // Heart Fountain: Spawn 5 hearts
+    
     for (let i = 0; i < 5; i++) {
         setTimeout(() => {
             const heart = document.createElement('div');
