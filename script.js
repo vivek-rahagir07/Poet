@@ -509,24 +509,57 @@ class Particle {
     constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 1.5;
-        this.speedX = (Math.random() - 0.5) * 0.2;
-        this.speedY = (Math.random() - 0.5) * 0.2;
-        this.opacity = Math.random() * 0.5;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
+        this.opacity = Math.random() * 0.6;
+        this.isInk = Math.random() > 0.8; // Randomly make some "ink" splats
+        this.angle = Math.random() * Math.PI * 2;
+        this.spin = Math.random() * 0.02 - 0.01;
     }
 
     update() {
+        // Mouse reaction: drift away from mouse
+        if (mouse.x && mouse.y) {
+            let dx = this.x - mouse.x;
+            let dy = this.y - mouse.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < 150) {
+                this.x += dx / 20;
+                this.y += dy / 20;
+            }
+        }
+
         this.x += this.speedX;
         this.y += this.speedY;
+        this.angle += this.spin;
+
         if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
         if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
     }
 
     draw() {
-        ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+        ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity * 0.4})`; // Subtle gold tint
+
+        if (this.isInk) {
+            // Draw a small irregular "ink" shape
+            ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+                let r = this.size * (0.8 + Math.random() * 0.4);
+                let a = (i / 5) * Math.PI * 2;
+                ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+            }
+            ctx.closePath();
+            ctx.fill();
+        } else {
+            ctx.beginPath();
+            ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
     }
 }
 
@@ -1363,6 +1396,114 @@ async function promoteToRecent(data) {
     }
 }
 
+// --- Audio Reactive Analyzer ---
+class AudioVisualizer {
+    constructor(audioElement) {
+        this.audio = audioElement;
+        this.context = null;
+        this.analyzer = null;
+        this.dataArray = null;
+        this.isInitialized = false;
+    }
+
+    init() {
+        if (this.isInitialized) return;
+        try {
+            this.context = new (window.AudioContext || window.webkitAudioContext)();
+            const source = this.context.createMediaElementSource(this.audio);
+            this.analyzer = this.context.createAnalyser();
+            this.analyzer.fftSize = 256;
+            source.connect(this.analyzer);
+            this.analyzer.connect(this.context.destination);
+            this.dataArray = new Uint8Array(this.analyzer.frequencyBinCount);
+            this.isInitialized = true;
+            this.animate();
+        } catch (e) {
+            console.log("AudioContext blocked or failed:", e);
+        }
+    }
+
+    animate() {
+        if (!this.isInitialized) return;
+        requestAnimationFrame(() => this.animate());
+        this.analyzer.getByteFrequencyData(this.dataArray);
+
+        // Calculate average volume/bass level
+        let sum = 0;
+        for (let i = 0; i < 10; i++) sum += this.dataArray[i]; // Low-end frequencies
+        const bassLevel = sum / 10;
+        const scale = 1 + (bassLevel / 255) * 0.15; // Max 15% pulse
+
+        // Apply pulse to UI elements
+        const pulseElements = document.querySelectorAll('.nav-logo, .global-likes-container');
+        pulseElements.forEach(el => {
+            el.style.transform = `scale(${scale})`;
+            if (bassLevel > 150) {
+                el.style.filter = `drop-shadow(0 0 ${bassLevel / 10}px rgba(212, 175, 55, 0.4))`;
+            }
+        });
+    }
+}
+
+let visualizer = null;
+
+// --- Cursor Trail Logic ---
+function initCursorTrail() {
+    const trailCanvas = document.getElementById('cursor-trail');
+    const tctx = trailCanvas.getContext('2d');
+    let points = [];
+    const maxPoints = 25;
+
+    function resize() {
+        trailCanvas.width = window.innerWidth;
+        trailCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function addPoint(x, y) {
+        points.push({ x, y, age: 0 });
+        if (points.length > maxPoints) points.shift();
+    }
+
+    window.addEventListener('mousemove', (e) => {
+        addPoint(e.clientX, e.clientY);
+    });
+
+    function drawTrail() {
+        tctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+        if (points.length < 2) return;
+
+        tctx.beginPath();
+        tctx.moveTo(points[0].x, points[0].y);
+
+        for (let i = 1; i < points.length; i++) {
+            const p = points[i];
+            const prev = points[i - 1];
+            const xc = (p.x + prev.x) / 2;
+            const yc = (p.y + prev.y) / 2;
+            tctx.quadraticCurveTo(prev.x, prev.y, xc, yc);
+        }
+
+        tctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
+        tctx.lineWidth = 2;
+        tctx.lineCap = 'round';
+        tctx.stroke();
+
+        requestAnimationFrame(drawTrail);
+    }
+    drawTrail();
+}
+
+// Update startAudio in script.js to also init visualizer
+// Store the original function reference
+const originalStartAudio = startAudio;
+// Reassign startAudio to a new function that calls the visualizer init
+startAudio = () => {
+    if (visualizer) visualizer.init();
+    if (originalStartAudio) originalStartAudio(); // Call the original function if it exists
+};
+
 // Global Initialization
 document.addEventListener('DOMContentLoaded', () => {
     renderGallery();
@@ -1372,6 +1513,14 @@ document.addEventListener('DOMContentLoaded', () => {
     initGlobalWhispers();
     initWriterUI();
     initSubscription(); // New subscription system
+
+    // Initial calls
+    initCursorTrail();
+    const bgMusic = document.getElementById('bg-music');
+    if (bgMusic) {
+        visualizer = new AudioVisualizer(bgMusic);
+        // Visualizer init will be triggered by user interaction via startAudio
+    }
 
     // Notification System
     if ('Notification' in window && 'serviceWorker' in navigator) {
