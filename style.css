@@ -611,8 +611,8 @@ nav {
     margin-bottom: 2rem;
     position: relative;
     overflow: hidden;
-    border-radius: 4px;
-    /* Slight softening */
+    border-radius: 8px;
+    /* Slightly more rounded for premium feel */
     opacity: 0;
     /* JS fade in */
     transform: translateY(40px) scale(0.95);
@@ -625,6 +625,11 @@ nav {
     /* 3D Context */
     perspective: 1000px;
     transform-style: preserve-3d;
+
+    /* Reactive Border */
+    border: 1px solid rgba(212, 175, 55, var(--border-opacity, 0.1));
+    box-shadow: 0 0 var(--glow-spread, 0px) rgba(212, 175, 55, var(--glow-opacity, 0));
+    transition: transform 0.8s var(--ease-out), opacity 0.8s var(--ease-out), border-color 0.05s linear, box-shadow 0.05s linear;
 }
 
 .gallery-item.visible {

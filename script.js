@@ -1432,14 +1432,22 @@ class AudioVisualizer {
         let sum = 0;
         for (let i = 0; i < 10; i++) sum += this.dataArray[i]; // Low-end frequencies
         const bassLevel = sum / 10;
-        const scale = 1 + (bassLevel / 255) * 0.15; // Max 15% pulse
+        const intensity = bassLevel / 255;
+        const scale = 1 + intensity * 0.15;
 
-        // Apply pulse to UI elements
+        // Update CSS Variables at root for reactive borders (Global update)
+        document.documentElement.style.setProperty('--border-opacity', (0.1 + intensity * 0.9).toFixed(2));
+        document.documentElement.style.setProperty('--glow-spread', `${(intensity * 25).toFixed(1)}px`);
+        document.documentElement.style.setProperty('--glow-opacity', (intensity * 0.6).toFixed(2));
+
+        // Apply pulse to specific UI elements
         const pulseElements = document.querySelectorAll('.nav-logo, .global-likes-container');
         pulseElements.forEach(el => {
             el.style.transform = `scale(${scale})`;
-            if (bassLevel > 150) {
-                el.style.filter = `drop-shadow(0 0 ${bassLevel / 10}px rgba(212, 175, 55, 0.4))`;
+            if (bassLevel > 140) {
+                el.style.filter = `drop-shadow(0 0 ${bassLevel / 8}px rgba(212, 175, 55, 0.5))`;
+            } else {
+                el.style.filter = 'none';
             }
         });
     }
