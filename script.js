@@ -107,7 +107,7 @@ async function toggleLike(id) {
     } else {
         likedItems[id] = true;
         galleryLikes[id] = (galleryLikes[id] || 0) + 1;
-        triggerHeartPopup(); 
+        triggerHeartPopup();
     }
 
     localStorage.setItem('poet_liked_items', JSON.stringify(likedItems));
@@ -130,7 +130,7 @@ async function toggleLike(id) {
 }
 
 function triggerHeartPopup() {
-    
+
     for (let i = 0; i < 5; i++) {
         setTimeout(() => {
             const heart = document.createElement('div');
@@ -248,8 +248,9 @@ function handleDeepLinking() {
     // Check if it's an image from static gallery
     if (hash.startsWith('img-')) {
         const idParts = hash.split('-');
-        const index = idParts[1];
-        const src = `${imageFolder}/${index}.jpg`;
+        const index = parseInt(idParts[1]);
+        const ext = (index === 26) ? 'png' : 'jpg';
+        const src = `${imageFolder}/${index}.${ext}`;
         openLightbox(src, hash);
     } else {
         // Check if it's a dynamic article
@@ -586,7 +587,8 @@ function initHeroCollage() {
 
         displayList.forEach(i => {
             const img = document.createElement('img');
-            img.src = `${imageFolder}/${i}.jpg`;
+            const ext = (i === 26) ? 'png' : 'jpg';
+            img.src = `${imageFolder}/${i}.${ext}`;
             img.classList.add('collage-img');
             img.alt = "";
             img.style.opacity = (0.6 + Math.random() * 0.4).toFixed(2);
@@ -612,7 +614,8 @@ function renderGallery() {
 
     // Add images
     for (let i = 1; i <= totalImages; i++) {
-        const imgSrc = `${imageFolder}/${i}.jpg`;
+        const ext = (i === 26) ? 'png' : 'jpg';
+        const imgSrc = `${imageFolder}/${i}.${ext}`;
         const encodedSrc = encodeURI(imgSrc);
 
         // Skip if this image is already promoted (exists in dynamic articles)
@@ -625,7 +628,7 @@ function renderGallery() {
             src: encodedSrc,
             id: `img-${i}`,
             category: 'poetry',
-            isRecent: false // Static images are considered legacy
+            isRecent: (i === 26) // Highlight image 26 as recent as requested
         });
     }
 
