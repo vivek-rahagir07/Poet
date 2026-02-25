@@ -659,9 +659,9 @@ function renderGallery() {
         items.push({
             type: 'image',
             src: encodedSrc,
-            id: `img-${i}`,
+            id: `id-${i}`, // Using consistent ID pattern
             category: 'poetry',
-            isRecent: (i === 26) // Highlight image 26 as recent as requested
+            isRecent: (i === 26) // Highlight image 26 as recent always
         });
     }
 
@@ -691,7 +691,14 @@ function renderGallery() {
         });
     });
 
-    items.sort(() => Math.random() - 0.5);
+    // Sort items: isRecent first, then by timestamp or random within their groups
+    items.sort((a, b) => {
+        if (a.isRecent && !b.isRecent) return -1;
+        if (!a.isRecent && b.isRecent) return 1;
+        // If both/neither are recent, maintain relative order or use secondary criteria
+        // (Previously it was just random, let's keep it mostly random for others)
+        return Math.random() - 0.5;
+    });
 
     items.forEach(data => {
         const item = document.createElement('div');
