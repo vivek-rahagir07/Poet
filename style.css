@@ -406,11 +406,12 @@ nav {
 
 .collage-img {
     height: 25vh;
-    /* Responsive height based on viewport */
     width: auto;
     border-radius: 4px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-    opacity: 0.8;
+    opacity: 0.85;
+    transition: opacity 1s var(--ease-out);
+    filter: brightness(0.8) contrast(1.1);
 }
 
 /* Scroll Animations */
@@ -703,9 +704,7 @@ nav {
     width: 20px;
     height: 20px;
     cursor: pointer;
-    fill: none;
-    stroke: #fff;
-    stroke-width: 2;
+    color: rgba(255, 255, 255, 0.6);
     transition: all 0.3s ease;
 }
 
@@ -2147,21 +2146,35 @@ footer {
 .floating-heart {
     position: fixed;
     pointer-events: none;
-    z-index: 9999;
-    font-size: 2rem;
+    z-index: 99999;
+    /* Ultra high */
+    font-size: 2.2rem;
+    color: #ff3e3e;
+    animation: heartFlyUp 2s ease-out forwards;
+    text-shadow: 0 0 15px rgba(255, 62, 62, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.floating-heart.golden-style {
     color: var(--accent-color);
-    animation: heartFlyUp 1.5s ease-out forwards;
-    text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
 }
 
 @keyframes heartFlyUp {
     0% {
-        transform: translateY(0) scale(1) rotate(0);
+        transform: translateY(0) scale(0.5) rotate(0);
+        opacity: 0;
+    }
+
+    15% {
         opacity: 1;
+        transform: translateY(-20px) scale(1.2) rotate(10deg);
     }
 
     100% {
-        transform: translateY(-150px) scale(2) rotate(20deg);
+        transform: translateY(-250px) scale(1.8) rotate(45deg);
         opacity: 0;
     }
 }

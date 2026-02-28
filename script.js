@@ -129,20 +129,21 @@ async function toggleLike(id) {
     }
 }
 
-function triggerHeartPopup() {
+function triggerHeartPopup(isGolden = false) {
 
-    for (let i = 0; i < 5; i++) {
+    const heartCount = isGolden ? 15 : 8;
+    for (let i = 0; i < heartCount; i++) {
         setTimeout(() => {
             const heart = document.createElement('div');
             heart.classList.add('floating-heart');
-            heart.innerHTML = '❤';
+            if (isGolden) heart.classList.add('golden-style');
+            heart.innerHTML = isGolden ? '✨' : '❤';
 
-            // Randomize position and scale for a natural fountain look
-            const startX = (window.innerWidth / 2) + (Math.random() * 200 - 100);
-            const startY = window.innerHeight * 0.8;
+            const startX = (window.innerWidth / 2) + (Math.random() * 240 - 120);
+            const startY = window.innerHeight * 0.85;
 
-            const randomSize = 0.5 + Math.random() * 1.5;
-            const randomRotation = Math.random() * 40 - 20;
+            const randomSize = 0.8 + Math.random() * 1.5;
+            const randomRotation = Math.random() * 60 - 30;
 
             heart.style.left = `${startX}px`;
             heart.style.top = `${startY}px`;
@@ -150,11 +151,8 @@ function triggerHeartPopup() {
 
             document.body.appendChild(heart);
 
-            // Cleanup
-            setTimeout(() => {
-                heart.remove();
-            }, 1500);
-        }, i * 100); // Slight stagger for cinematic feel
+            setTimeout(() => heart.remove(), 2000);
+        }, i * (isGolden ? 80 : 150));
     }
 }
 
@@ -249,7 +247,7 @@ function handleDeepLinking() {
     if (hash.startsWith('img-')) {
         const idParts = hash.split('-');
         const index = parseInt(idParts[1]);
-        const src = `${imageFolder}/${index}.jpg`;
+        const src = encodeURI(`${imageFolder}/${index}.jpg`);
         openLightbox(src, hash);
     } else {
         // Check if it's a dynamic article
@@ -413,8 +411,9 @@ window.addEventListener('load', () => {
                             preloader.classList.add('hidden');
                             initTypewriter();
                             initScrollReveal();
-                            // Trigger heart popup on entry
-                            triggerHeartPopup();
+                            // Trigger spectacular heart popup on entry
+                            triggerHeartPopup(true); // Golden ones
+                            setTimeout(() => triggerHeartPopup(false), 500); // Red ones
                         }, 1200);
                     } else {
                         i++;
@@ -621,7 +620,7 @@ function initHeroCollage() {
 
         displayList.forEach(i => {
             const img = document.createElement('img');
-            img.src = `${imageFolder}/${i}.jpg`;
+            img.src = encodeURI(`${imageFolder}/${i}.jpg`);
             img.classList.add('collage-img');
             img.alt = "";
             img.style.opacity = (0.6 + Math.random() * 0.4).toFixed(2);
@@ -647,20 +646,19 @@ function renderGallery() {
 
     // Add images
     for (let i = 1; i <= totalImages; i++) {
-        const imgSrc = `${imageFolder}/${i}.jpg`;
-        const encodedSrc = encodeURI(imgSrc);
+        const imgSrc = encodeURI(`${imageFolder}/${i}.jpg`);
 
         // Skip if this image is already promoted (exists in dynamic articles)
-        if (dynamicImageSources.has(encodedSrc) || dynamicImageSources.has(imgSrc)) {
+        if (dynamicImageSources.has(imgSrc)) {
             continue;
         }
 
         items.push({
             type: 'image',
-            src: encodedSrc,
-            id: `id-${i}`, // Using consistent ID pattern
+            src: imgSrc,
+            id: `id-${i}`,
             category: 'poetry',
-            isRecent: (i === 26) // Highlight image 26 as recent always
+            isRecent: (i === 26)
         });
     }
 
@@ -1073,6 +1071,9 @@ function initWriterUI() {
         // Secret shortcut to show/hide the writer button: Cmd + Shift + E
         window.addEventListener('keydown', (e) => {
             if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.code === 'KeyE') {
+                // Disable for mobile/small screens
+                if (window.innerWidth <= 768) return;
+
                 e.preventDefault();
                 const isHidden = window.getComputedStyle(writerTrigger).display === 'none';
                 writerTrigger.style.display = isHidden ? 'flex' : 'none';
@@ -1474,46 +1475,48 @@ startAudio = () => {
 document.addEventListener('DOMContentLoaded', () => {
     renderGallery();
     initRealtimeUpdates();
-    initLikeSystem();
-    initHeroCollage();
-    initGlobalWhispers();
-    initWriterUI();
-    initSubscription(); // New subscription system
+    // Safe Initial Calls
+    const safeInit = (name, fn) => {
+        try {
+            fn();
+            console.log(`Initialized: ${name} ✨`);
+        } catch (e) {
+            console.error(`Failed to initialize ${name}:`, e);
+        }
+    };
 
-    // Initial calls
-    initCursorTrail();
+    safeInit('Gallery', renderGallery);
+    safeInit('Realtime', initRealtimeUpdates);
+    safeInit('Likes', initLikeSystem);
+    safeInit('HeroCollage', initHeroCollage);
+    safeInit('Whispers', initGlobalWhispers);
+    safeInit('WriterUI', initWriterUI);
+    safeInit('Subscription', initSubscription);
+    safeInit('CursorTrail', initCursorTrail);
+
     const bgMusic = document.getElementById('bg-music');
     if (bgMusic) {
         visualizer = new AudioVisualizer(bgMusic);
-        // Visualizer init will be triggered by user interaction via startAudio
     }
 
     // Notification System
     if ('Notification' in window && 'serviceWorker' in navigator) {
         const messaging = firebase.messaging();
-
         const requestPermission = async () => {
             try {
                 const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
-                    console.log('Notification permission granted.');
                     const token = await messaging.getToken({
-                        vapidKey: 'BMJ8jI_J-k9vW2Z5X_4J_5Q-uX9_J_k9vW2Z5X_4J_5Q' // Placeholder VAPID key
+                        vapidKey: 'BMJ8jI_J-k9vW2Z5X_4J_5Q-uX9_J_k9vW2Z5X_4J_5Q'
                     });
                     if (token) {
-                        console.log('FCM Token:', token);
-                        // Save token to Firestore for targeting
                         await db.collection('notification_tokens').doc(token).set({
                             timestamp: firebase.firestore.FieldValue.serverTimestamp()
                         });
                     }
                 }
-            } catch (err) {
-                console.log('Unable to get permission/token', err);
-            }
+            } catch (err) { /* quiet */ }
         };
-
-        // Delay prompt for better UX
         setTimeout(requestPermission, 5000);
     }
 });
