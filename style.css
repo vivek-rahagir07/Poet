@@ -710,8 +710,7 @@ nav {
 }
 
 .like-heart.liked {
-    fill: #e31b23;
-    stroke: #e31b23;
+    color: #e31b23;
     transform: scale(1.2);
 }
 
@@ -2173,10 +2172,10 @@ footer {
     position: fixed;
     pointer-events: none;
     z-index: 9999;
-    font-size: 1.5rem;
-    color: #ff4d4d;
+    font-size: 2rem;
+    color: var(--accent-color);
     animation: heartFlyUp 1.5s ease-out forwards;
-    text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
 }
 
 @keyframes heartFlyUp {
@@ -2334,9 +2333,9 @@ footer {
     position: fixed;
     pointer-events: none;
     z-index: 10001;
-    font-size: 1.2rem;
-    animation: goldenHeartFall 3s ease-in forwards;
-    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.8));
+    font-size: 1.5rem;
+    animation: goldenHeartFall 3.5s ease-in forwards;
+    filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.6));
 }
 
 @keyframes goldenHeartFall {

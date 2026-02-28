@@ -249,8 +249,7 @@ function handleDeepLinking() {
     if (hash.startsWith('img-')) {
         const idParts = hash.split('-');
         const index = parseInt(idParts[1]);
-        const ext = (index === 26) ? 'png' : 'jpg';
-        const src = `${imageFolder}/${index}.${ext}`;
+        const src = `${imageFolder}/${index}.jpg`;
         openLightbox(src, hash);
     } else {
         // Check if it's a dynamic article
@@ -414,6 +413,8 @@ window.addEventListener('load', () => {
                             preloader.classList.add('hidden');
                             initTypewriter();
                             initScrollReveal();
+                            // Trigger heart popup on entry
+                            triggerHeartPopup();
                         }, 1200);
                     } else {
                         i++;
@@ -620,8 +621,7 @@ function initHeroCollage() {
 
         displayList.forEach(i => {
             const img = document.createElement('img');
-            const ext = (i === 26) ? 'png' : 'jpg';
-            img.src = `${imageFolder}/${i}.${ext}`;
+            img.src = `${imageFolder}/${i}.jpg`;
             img.classList.add('collage-img');
             img.alt = "";
             img.style.opacity = (0.6 + Math.random() * 0.4).toFixed(2);
@@ -647,8 +647,7 @@ function renderGallery() {
 
     // Add images
     for (let i = 1; i <= totalImages; i++) {
-        const ext = (i === 26) ? 'png' : 'jpg';
-        const imgSrc = `${imageFolder}/${i}.${ext}`;
+        const imgSrc = `${imageFolder}/${i}.jpg`;
         const encodedSrc = encodeURI(imgSrc);
 
         // Skip if this image is already promoted (exists in dynamic articles)
@@ -1053,86 +1052,85 @@ lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) closeLightbox();
 });
 
-// --- Writer System ---
-const writerTrigger = document.getElementById('writer-trigger');
-const writerModal = document.getElementById('writer-modal');
-const closeWriter = document.querySelector('.close-writer');
-const publishBtn = document.getElementById('publish-btn');
-const titleInput = document.getElementById('article-title');
-const bodyInput = document.getElementById('article-body');
+// --- Writer System Logic Wrapper ---
+function initWriterUI() {
+    const writerTrigger = document.getElementById('writer-trigger');
+    const writerModal = document.getElementById('writer-modal');
+    const closeWriter = document.querySelector('.close-writer');
+    const publishBtn = document.getElementById('publish-btn');
+    const titleInput = document.getElementById('article-title');
+    const bodyInput = document.getElementById('article-body');
 
-if (writerTrigger) {
-    writerTrigger.addEventListener('click', () => {
-        writerModal.classList.add('open');
-        document.body.style.overflow = 'hidden';
-    });
+    if (writerTrigger) {
+        writerTrigger.addEventListener('click', () => {
+            writerModal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        });
 
-    closeWriter.addEventListener('click', () => {
-        writerModal.classList.remove('open');
-        document.body.style.overflow = 'auto';
-    });
-
-    publishBtn.addEventListener('click', async () => {
-        const title = titleInput.value.trim();
-        const body = bodyInput.value.trim();
-        if (!title || !body) {
-            alert("Please write something before publishing.");
-            return;
-        }
-
-        publishBtn.textContent = "Publishing...";
-        const success = await saveArticleToFirebase(title, body);
-        publishBtn.textContent = "Publish";
-
-        if (success) {
-            alert("Poetry published to cloud successfully! ✨");
-            titleInput.value = '';
-            bodyInput.value = '';
+        closeWriter.addEventListener('click', () => {
             writerModal.classList.remove('open');
             document.body.style.overflow = 'auto';
-            // renderGallery handled by onSnapshot
-            const articleBtn = document.querySelector('.filter-btn[data-filter="articles"]');
-            if (articleBtn) articleBtn.click();
-        }
-    });
+        });
 
-    const testNotifyBtn = document.getElementById('test-notify-btn');
-    if (testNotifyBtn) {
-        testNotifyBtn.addEventListener('click', () => {
-            if (!('Notification' in window)) {
-                alert("This browser does not support notifications.");
+        publishBtn.addEventListener('click', async () => {
+            const title = titleInput.value.trim();
+            const body = bodyInput.value.trim();
+            if (!title || !body) {
+                alert("Please write something before publishing.");
                 return;
             }
 
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    new Notification("Wayfarer's Signal", {
-                        body: "A new whisper has been published. ✨",
-                        icon: "app_logo.png"
-                    });
-                } else {
-                    alert("Permission denied. Enable notifications in settings.");
+            publishBtn.textContent = "Publishing...";
+            const success = await saveArticleToFirebase(title, body);
+            publishBtn.textContent = "Publish";
+
+            if (success) {
+                alert("Poetry published to cloud successfully! ✨");
+                titleInput.value = '';
+                bodyInput.value = '';
+                writerModal.classList.remove('open');
+                document.body.style.overflow = 'auto';
+                // renderGallery handled by onSnapshot
+                const articleBtn = document.querySelector('.filter-btn[data-filter="articles"]');
+                if (articleBtn) articleBtn.click();
+            }
+        });
+
+        const testNotifyBtn = document.getElementById('test-notify-btn');
+        if (testNotifyBtn) {
+            testNotifyBtn.addEventListener('click', () => {
+                if (!('Notification' in window)) {
+                    alert("This browser does not support notifications.");
+                    return;
                 }
+
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        new Notification("Wayfarer's Signal", {
+                            body: "A new whisper has been published. ✨",
+                            icon: "app_logo.png"
+                        });
+                    } else {
+                        alert("Permission denied. Enable notifications in settings.");
+                    }
+                });
             });
+        }
+
+        // Secret shortcut to show/hide the writer button: Cmd + Shift + E
+        window.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.code === 'KeyE') {
+                e.preventDefault();
+                const isHidden = window.getComputedStyle(writerTrigger).display === 'none';
+                writerTrigger.style.display = isHidden ? 'flex' : 'none';
+                document.body.classList.toggle('admin-mode', isHidden); // Toggle Admin Mode
+
+                if (isHidden) {
+                    console.log("Writer access granted. ✨");
+                }
+            }
         });
     }
-
-    // Secret shortcut to show/hide the writer button: Cmd + Shift + E
-    window.addEventListener('keydown', (e) => {
-        if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.code === 'KeyE') {
-            // Disable for mobile/small screens
-            if (window.innerWidth <= 768) return;
-
-            e.preventDefault();
-            const isHidden = window.getComputedStyle(writerTrigger).display === 'none';
-            writerTrigger.style.display = isHidden ? 'flex' : 'none';
-            document.body.classList.toggle('admin-mode', isHidden); // Toggle Admin Mode
-
-            if (isHidden) {
-                console.log("Writer access granted. ✨");
-            }
-        }
-    });
 }
 
 // --- Custom Interaction ---
