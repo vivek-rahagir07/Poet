@@ -407,6 +407,7 @@ function renderGallery() {
     items.forEach(data => {
         const item = document.createElement('div');
         item.classList.add('gallery-item');
+        if (data.category) item.dataset.category = data.category;
         if (data.isRecent) item.classList.add('recent-item');
         if (data.isExpired) item.classList.add('expired');
         if (data.type === 'image') {
