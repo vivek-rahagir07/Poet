@@ -248,8 +248,6 @@ window.addEventListener('load', () => {
                             preloader.classList.add('hidden');
                             initTypewriter();
                             initScrollReveal();
-                            triggerHeartPopup(true);
-                            setTimeout(() => triggerHeartPopup(false), 500);
                         }, 1200);
                     } else {
                         i++;
@@ -498,19 +496,19 @@ function initWriterUI() {
 }
 
 // --- Custom Interaction ---
-const cursorDot = document.querySelector('.cursor-dot'), cursorOutline = document.querySelector('.cursor-outline');
+const cursorDot = document.querySelector('.cursor-dot');
 window.addEventListener('mousemove', e => {
     const posX = e.clientX, posY = e.clientY;
     cursorDot.style.left = `${posX}px`; cursorDot.style.top = `${posY}px`;
-    cursorOutline.animate({ left: `${posX}px`, top: `${posY}px` }, { duration: 400, fill: "forwards"});
 });
 document.querySelectorAll('a, button, .logo, .writer-trigger').forEach(el => {
     el.addEventListener('mousemove', e => {
         const rect = el.getBoundingClientRect();
         el.style.transform = `translate(${(e.clientX - rect.left - rect.width/2)*0.2}px, ${(e.clientY - rect.top - rect.height/2)*0.2}px)`;
-        cursorOutline.style.width = '50px'; cursorOutline.style.height = '50px'; cursorOutline.style.backgroundColor = 'rgba(212, 175, 55, 0.1)'; cursorOutline.style.borderColor = 'transparent';
     });
-    el.addEventListener('mouseleave', () => { el.style.transform = 'translate(0, 0)'; cursorOutline.style.width = '30px'; cursorOutline.style.height = '30px'; cursorOutline.style.backgroundColor = 'transparent'; cursorOutline.style.border = '1px solid rgba(255, 255, 255, 0.5)'; });
+    el.addEventListener('mouseleave', () => { 
+        el.style.transform = 'translate(0, 0)'; 
+    });
 });
 
 // Filters
@@ -606,28 +604,11 @@ class AudioVisualizer {
     }
 }
 let visualizer = null;
-function initCursorTrail() {
-    const canvas = document.getElementById('cursor-trail'), ctx = canvas.getContext('2d');
-    let points = []; const max = 25;
-    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-    window.addEventListener('resize', resize); resize();
-    window.addEventListener('mousemove', e => { points.push({ x: e.clientX, y: e.clientY }); if (points.length > max) points.shift(); });
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (points.length > 1) {
-            ctx.beginPath(); ctx.moveTo(points[0].x, points[0].y);
-            for (let i = 1; i < points.length; i++) { const xc = (points[i].x + points[i-1].x) / 2, yc = (points[i].y + points[i-1].y) / 2; ctx.quadraticCurveTo(points[i-1].x, points[i-1].y, xc, yc); }
-            ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.stroke();
-        }
-        requestAnimationFrame(draw);
-    }
-    draw();
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     const safeInit = (name, fn) => { try { fn(); console.log(`Initialized: ${name} ✨`); } catch (e) { console.error(`Failed: ${name}`, e); } };
     safeInit('Likes', initLikeSystem); safeInit('Realtime', initRealtimeUpdates); safeInit('HeroCollage', initHeroCollage);
-    safeInit('WriterUI', initWriterUI); safeInit('Subscription', initSubscription); safeInit('CursorTrail', initCursorTrail);
+    safeInit('WriterUI', initWriterUI); safeInit('Subscription', initSubscription);
     const bgMusic = document.getElementById('bg-music'); if (bgMusic) visualizer = new AudioVisualizer(bgMusic);
     if ('Notification' in window && 'serviceWorker' in navigator) {
         const messaging = firebase.messaging();
