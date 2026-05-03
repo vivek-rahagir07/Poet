@@ -112,7 +112,7 @@ async function toggleLike(id) {
 }
 
 function triggerHeartPopup(isGolden = false) {
-    const heartCount = isGolden ? 15 : 8;
+    const heartCount = isGolden ? 5 : 3; // Reduced heart count
     for (let i = 0; i < heartCount; i++) {
         setTimeout(() => {
             const heart = document.createElement('div');
@@ -363,7 +363,8 @@ function connectParticles() {
         }
     }
 }
-initParticles(); animateParticles();
+// Particle system disabled to reduce visual clutter
+// initParticles(); animateParticles();
 
 // --- Hero Collage ---
 function initHeroCollage() {
@@ -540,7 +541,7 @@ if (audio && soundToggle) {
 
 // Golden Rain
 function triggerGoldenRain() {
-    const count = 30;
+    const count = 8; // Reduced count
     for (let i = 0; i < count; i++) {
         setTimeout(() => {
             const h = document.createElement('div'); h.classList.add('golden-heart'); h.innerHTML = '💛';
