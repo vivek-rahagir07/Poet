@@ -2,15 +2,6 @@
 (function () {
     const _s = (s) => atob(s).split('').map(c => String.fromCharCode(c.charCodeAt(0) ^ 42)).join('');
 
-    // Obfuscated values (Encoded with XOR 42 + Base64)
-    // Key: AIzaSyAT2O4co4kTlDv6w1Jp4pGPjkfBk94D4fk
-    // Auth: poet-cb8dc.firebaseapp.com
-    // Project: poet-cb8dc
-    // Storage: poet-cb8dc.firebasestorage.app
-    // Sender: 1034470030320
-    // AppId: 1:1034470030320:web:c6fb3a2c725c298d247b35
-    // Measurement: G-XK16TTH47N
-
     const _c = {
         _a: "a2NQS3lTa34YZR5JRR5BfkZuXBxdG2BaHlptekBBTGhBEx5uHkxB", // apiKey
         _b: "WkVPXgdJSBJOSQRMQ1hPSEtZT0taWgRJRUc=",                 // authDomain
